@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>领主宝石 | 升级计算页面（示例）</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #9ca3af;
+      --fg: #e5e7eb;
+      --accent: #e11d48;
+      --accent-2: #22d3ee;
+      --border: #1f2937;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--fg);
+      background: linear-gradient(180deg, #0b1023 0%, #0f172a 100%);
+      min-height: 100vh;
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(15, 23, 42, 0.7);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .container {
+      max-width: 1180px; margin: 0 auto; padding: 16px 20px;
+      display: grid; grid-template-columns: 1fr 320px; gap: 20px;
+    }
+    h1 { text-align: center; font-size: 32px; margin: 18px 0; letter-spacing: 2px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .table-wrap { overflow: auto; border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { position: sticky; top: 0; background: #0b1224; }
+    th, td { padding: 14px 12px; text-align: center; border-bottom: 1px solid var(--border); }
+    th { font-weight: 700; }
+    tbody tr:hover { background: rgba(34, 211, 238, 0.06); }
+    .aside { position: sticky; top: 72px; align-self: start; }
+    .panel { padding: 16px; }
+    .panel h2 { font-size: 20px; margin: 0 0 12px; }
+    .field { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; margin: 10px 0; }
+    select, input[type="number"] {
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: #0b1023; color: var(--fg);
+    }
+    .btn {
+      width: 100%; margin-top: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid transparent; color: white; font-weight: 700; cursor: pointer;
+      background: linear-gradient(90deg, var(--accent) 0%, #ef4444 40%, var(--accent-2) 100%);
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .result {
+      margin-top: 14px; padding: 12px; border: 1px dashed var(--border); border-radius: 12px; background: #0b1023;
+    }
+    .muted { color: var(--muted); font-size: 13px; }
+    .tag { display:inline-block; padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; font-size: 12px; color: var(--muted); margin-right: 6px; }
+    footer { text-align: center; color: var(--muted); padding: 30px 0 40px; }
+    a { color: #7dd3fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    @media (max-width: 960px) {
+      .container { grid-template-columns: 1fr; }
+      .aside { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container" style="grid-template-columns: 1fr;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
+        <h1>领主宝石</h1>
+        <div>
+          <span class="tag">静态HTML</span>
+          <span class="tag">原生JS</span>
+          <span class="tag">可部署到 GitHub Pages</span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <section class="card table-wrap" aria-label="材料表格">
+      <table id="gem-table">
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th>宝石手册</th>
+            <th>宝石图纸</th>
+            <th>宝石秘典</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <aside class="aside card">
+      <div class="panel">
+        <h2>升级计算机</h2>
+        <div class="field">
+          <label for="start">起始编号：</label>
+          <select id="start"></select>
+        </div>
+        <div class="field">
+          <label for="end">最终编号：</label>
+          <select id="end"></select>
+        </div>
+        <div class="field">
+          <label for="count">件数：</label>
+          <input id="count" type="number" min="1" step="1" value="1" />
+        </div>
+        <button id="calc" class="btn">计算</button>
+        <div class="result" id="result">
+          <div class="muted">请选择等级并输入件数后点击“计算”。</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+  <footer>
+    开源示例，便于二次开发与自定义样式。 | 由 <a href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> 托管
+  </footer>
+  <script>
+    const rows = [
+      { id: 1, manual: 5, paper: 5, secret: 0 },
+      { id: 2, manual: 40, paper: 15, secret: 0 },
+      { id: 3, manual: 60, paper: 40, secret: 0 },
+      { id: 4, manual: 80, paper: 100, secret: 0 },
+      { id: 5, manual: 100, paper: 200, secret: 0 },
+      { id: 6, manual: 120, paper: 300, secret: 0 },
+      { id: 7, manual: 140, paper: 400, secret: 0 },
+      { id: 8, manual: 200, paper: 400, secret: 0 },
+      { id: 9, manual: 300, paper: 400, secret: 0 },
+      { id: 10, manual: 420, paper: 420, secret: 0 },
+      { id: 11, manual: 560, paper: 420, secret: 0 },
+      { id: 12, manual: 580, paper: 450, secret: 15 },
+      { id: 13, manual: 580, paper: 450, secret: 30 },
+      { id: 14, manual: 600, paper: 500, secret: 45 },
+      { id: 15, manual: 600, paper: 500, secret: 70 },
+      { id: 16, manual: 650, paper: 550, secret: 100 },
+    ];
+
+    const tbody = document.querySelector('#gem-table tbody');
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.id}</td>
+        <td>${r.manual}</td>
+        <td>${r.paper}</td>
+        <td>${r.secret}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const startSel = document.querySelector('#start');
+    const endSel = document.querySelector('#end');
+    rows.forEach(r => {
+      const o1 = document.createElement('option'); o1.value = r.id; o1.textContent = r.id; startSel.appendChild(o1);
+      const o2 = document.createElement('option'); o2.value = r.id; o2.textContent = r.id; endSel.appendChild(o2);
+    });
+    startSel.value = 1; endSel.value = 1;
+
+    function calc() {
+      const s = parseInt(startSel.value, 10);
+      const e = parseInt(endSel.value, 10);
+      const c = Math.max(1, parseInt(document.querySelector('#count').value || '1', 10));
+      if (e < s) {
+        document.querySelector('#result').innerHTML = '<span class="muted">最终编号不能小于起始编号。</span>';
+        return;
+      }
+      let manual = 0, paper = 0, secret = 0;
+      for (const r of rows) {
+        if (r.id >= s && r.id <= e) {
+          manual += r.manual; paper += r.paper; secret += r.secret;
+        }
+      }
+      manual *= c; paper *= c; secret *= c;
+      document.querySelector('#result').innerHTML = `
+        <div>共需要：<strong>${manual.toLocaleString('zh-Hans-CN')}</strong> × 宝石手册</div>
+        <div>共需要：<strong>${paper.toLocaleString('zh-Hans-CN')}</strong> × 宝石图纸</div>
+        <div>共需要：<strong>${secret.toLocaleString('zh-Hans-CN')}</strong> × 宝石秘典</div>
+        <div class="muted" style="margin-top:8px;">区间：${s} → ${e}，件数：${c}</div>
+      `;
+    }
+    document.querySelector('#calc').addEventListener('click', calc);
+  </script>
+</body>
+</html>
