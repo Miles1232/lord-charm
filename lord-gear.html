@@ -10,8 +10,8 @@
       --card: #111827;
       --muted: #9ca3af;
       --fg: #e5e7eb;
-      --accent: #f59e0b;   /* 金色 */
-      --accent-2: #22d3ee; /* 蓝色 */
+      --accent: #f59e0b;
+      --accent-2: #22d3ee;
       --border: #1f2937;
     }
     * { box-sizing: border-box; }
@@ -53,7 +53,6 @@
   </header>
 
   <main class="container">
-    <!-- 表格区 -->
     <section class="card table-wrap" aria-label="装备表格">
       <table id="equip-table">
         <thead>
@@ -66,11 +65,10 @@
             <th>月光石</th>
           </tr>
         </thead>
-        <tbody><!-- 动态插入 --></tbody>
+        <tbody></tbody>
       </table>
     </section>
 
-    <!-- 侧边计算器 -->
     <aside class="aside card">
       <div class="panel">
         <h2>升级计算机</h2>
@@ -99,38 +97,57 @@
   </footer>
 
   <script>
-    // 依据你提供的截图录入的 1–16 级数据（若有数值出入，可直接在这里修改）
+    // 1–42 级数据（来自你提供的图片）
     const rows = [
-      { id: 1,  tier: '良好',        alloy: 1500,  polish: 15,  scroll: 0,   moon: 0 },
-      { id: 2,  tier: '良好1星',      alloy: 3800,  polish: 40,  scroll: 0,   moon: 0 },
-      { id: 3,  tier: '稀有',        alloy: 7000,  polish: 70,  scroll: 0,   moon: 0 },
-      { id: 4,  tier: '稀有1星',      alloy: 9700,  polish: 95,  scroll: 0,   moon: 0 },
-      { id: 5,  tier: '稀有2星',      alloy: 0,     polish: 0,   scroll: 45,  moon: 0 },
-      { id: 6,  tier: '稀有3星',      alloy: 0,     polish: 0,   scroll: 50,  moon: 0 },
-      { id: 7,  tier: '史诗',        alloy: 0,     polish: 0,   scroll: 60,  moon: 0 },
-      { id: 8,  tier: '史诗1星',      alloy: 0,     polish: 0,   scroll: 70,  moon: 0 },
-      { id: 9,  tier: '史诗2星',      alloy: 6500,  polish: 65,  scroll: 40,  moon: 0 },
-      { id: 10, tier: '史诗3星',      alloy: 8000,  polish: 80,  scroll: 50,  moon: 0 },
-      { id: 11, tier: '史诗T1',      alloy: 10000, polish: 95,  scroll: 60,  moon: 0 },
-      { id: 12, tier: '史诗T1-1星',   alloy: 11000, polish: 110, scroll: 70,  moon: 0 },
-      { id: 13, tier: '史诗T1-2星',   alloy: 13000, polish: 130, scroll: 85,  moon: 0 },
-      { id: 14, tier: '史诗T1-3星',   alloy: 15000, polish: 160, scroll: 100, moon: 0 },
-      { id: 15, tier: '传说',        alloy: 22000, polish: 220, scroll: 40,  moon: 0 },
-      { id: 16, tier: '传说1星',      alloy: 23000, polish: 230, scroll: 40,  moon: 0 },
+      { id: 1,  tier: '良好',        alloy: 1500,  polish: 15,   scroll: 0,   moon: 0 },
+      { id: 2,  tier: '良好1星',      alloy: 3800,  polish: 40,   scroll: 0,   moon: 0 },
+      { id: 3,  tier: '稀有',        alloy: 7000,  polish: 70,   scroll: 0,   moon: 0 },
+      { id: 4,  tier: '稀有1星',      alloy: 9700,  polish: 95,   scroll: 0,   moon: 0 },
+      { id: 5,  tier: '稀有2星',      alloy: 0,     polish: 0,    scroll: 45,  moon: 0 },
+      { id: 6,  tier: '稀有3星',      alloy: 0,     polish: 0,    scroll: 50,  moon: 0 },
+      { id: 7,  tier: '史诗',        alloy: 0,     polish: 0,    scroll: 60,  moon: 0 },
+      { id: 8,  tier: '史诗1星',      alloy: 0,     polish: 0,    scroll: 70,  moon: 0 },
+      { id: 9,  tier: '史诗2星',      alloy: 6500,  polish: 65,   scroll: 40,  moon: 0 },
+      { id:10,  tier: '史诗3星',      alloy: 8000,  polish: 80,   scroll: 50,  moon: 0 },
+      { id:11,  tier: '史诗T1',      alloy: 10000, polish: 95,   scroll: 60,  moon: 0 },
+      { id:12,  tier: '史诗T1-1星',   alloy: 11000, polish: 110,  scroll: 70,  moon: 0 },
+      { id:13,  tier: '史诗T1-2星',   alloy: 13000, polish: 130,  scroll: 85,  moon: 0 },
+      { id:14,  tier: '史诗T1-3星',   alloy: 15000, polish: 160,  scroll: 100, moon: 0 },
+      { id:15,  tier: '传说',        alloy: 22000, polish: 220,  scroll: 40,  moon: 0 },
+      { id:16,  tier: '传说1星',      alloy: 23000, polish: 230,  scroll: 40,  moon: 0 },
+      { id:17,  tier: '传说2星',      alloy: 25000, polish: 250,  scroll: 45,  moon: 0 },
+      { id:18,  tier: '传说3星',      alloy: 26000, polish: 260,  scroll: 45,  moon: 0 },
+      { id:19,  tier: '传说T1',      alloy: 28000, polish: 280,  scroll: 45,  moon: 0 },
+      { id:20,  tier: '传说T1-1星',   alloy: 30000, polish: 300,  scroll: 55,  moon: 0 },
+      { id:21,  tier: '传说T1-2星',   alloy: 32000, polish: 320,  scroll: 55,  moon: 0 },
+      { id:22,  tier: '传说T1-3星',   alloy: 35000, polish: 340,  scroll: 55,  moon: 0 },
+      { id:23,  tier: '传说T2',      alloy: 38000, polish: 360,  scroll: 55,  moon: 0 },
+      { id:24,  tier: '传说T2-1星',   alloy: 43000, polish: 430,  scroll: 75,  moon: 0 },
+      { id:25,  tier: '传说T2-2星',   alloy: 45000, polish: 460,  scroll: 80,  moon: 0 },
+      { id:26,  tier: '传说T2-3星',   alloy: 48000, polish: 500,  scroll: 85,  moon: 0 },
+      { id:27,  tier: '神话',        alloy: 50000, polish: 530,  scroll: 85,  moon: 10 },
+      { id:28,  tier: '神话1星',      alloy: 52000, polish: 560,  scroll: 90,  moon: 10 },
+      { id:29,  tier: '神话2星',      alloy: 54000, polish: 590,  scroll: 95,  moon: 10 },
+      { id:30,  tier: '神话3星',      alloy: 56000, polish: 620,  scroll: 100, moon: 10 },
+      { id:31,  tier: '神话T1',      alloy: 59000, polish: 670,  scroll: 110, moon: 15 },
+      { id:32,  tier: '神话T1-1星',   alloy: 61000, polish: 700,  scroll: 115, moon: 15 },
+      { id:33,  tier: '神话T1-2星',   alloy: 63000, polish: 730,  scroll: 120, moon: 15 },
+      { id:34,  tier: '神话T1-3星',   alloy: 65000, polish: 760,  scroll: 125, moon: 15 },
+      { id:35,  tier: '神话T2',      alloy: 68000, polish: 810,  scroll: 135, moon: 20 },
+      { id:36,  tier: '神话T2-1星',   alloy: 70000, polish: 840,  scroll: 140, moon: 20 },
+      { id:37,  tier: '神话T2-2星',   alloy: 72000, polish: 870,  scroll: 145, moon: 20 },
+      { id:38,  tier: '神话T2-3星',   alloy: 74000, polish: 900,  scroll: 150, moon: 20 },
+      { id:39,  tier: '神话T3',      alloy: 77000, polish: 950,  scroll: 160, moon: 25 },
+      { id:40,  tier: '神话T3-1星',   alloy: 80000, polish: 990,  scroll: 165, moon: 25 },
+      { id:41,  tier: '神话T3-2星',   alloy: 83000, polish: 1030, scroll: 170, moon: 25 },
+      { id:42,  tier: '神话T3-3星',   alloy: 86000, polish: 1070, scroll: 180, moon: 25 },
     ];
 
     // 渲染表格
     const tbody = document.querySelector('#equip-table tbody');
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${r.id}</td>
-        <td>${r.tier}</td>
-        <td>${r.alloy}</td>
-        <td>${r.polish}</td>
-        <td>${r.scroll}</td>
-        <td>${r.moon}</td>
-      `;
+      tr.innerHTML = `<td>${r.id}</td><td>${r.tier}</td><td>${r.alloy}</td><td>${r.polish}</td><td>${r.scroll}</td><td>${r.moon}</td>`;
       tbody.appendChild(tr);
     });
 
