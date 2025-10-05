@@ -72,11 +72,11 @@
     <div class="container" style="grid-template-columns: 1fr;">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
         <h1>领主宝石</h1>
-        <div>
+        <!-- <div>
           <span class="tag">静态HTML</span>
           <span class="tag">原生JS</span>
           <span class="tag">可部署到 GitHub Pages</span>
-        </div>
+        </div> -->
       </div>
     </div>
   </header>
@@ -85,7 +85,7 @@
       <table id="gem-table">
         <thead>
           <tr>
-            <th>编号</th>
+            <th>等级</th>
             <th>宝石手册</th>
             <th>宝石图纸</th>
             <th>宝石秘典</th>
@@ -98,15 +98,15 @@
       <div class="panel">
         <h2>升级计算机</h2>
         <div class="field">
-          <label for="start">起始编号：</label>
+          <label for="start">起始等级：</label>
           <select id="start"></select>
         </div>
         <div class="field">
-          <label for="end">最终编号：</label>
+          <label for="end">最终等级：</label>
           <select id="end"></select>
         </div>
         <div class="field">
-          <label for="count">件数：</label>
+          <label for="count">升级数量：</label>
           <input id="count" type="number" min="1" step="1" value="1" />
         </div>
         <button id="calc" class="btn">计算</button>
@@ -116,9 +116,9 @@
       </div>
     </aside>
   </main>
-  <footer>
-    开源示例，便于二次开发与自定义样式。 | 由 <a href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> 托管
-  </footer>
+  <!-- <footer>
+    示例，便于二次开发与自定义样式。 | 由 <a href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> 托管
+  </footer> -->
   <script>
     const rows = [
       { id: 1, manual: 5, paper: 5, secret: 0 },
