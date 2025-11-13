@@ -54,8 +54,8 @@
     nav a:hover { text-decoration: underline; }
 
     .container {
-      max-width: 1180px; margin: 0 auto; padding: 16px 20px;
-      display: grid; grid-template-columns: 1fr 320px; gap: 20px;
+      max-width: 1500px; margin: 0 auto; padding: 16px 20px;
+      display: grid; grid-template-columns: 1fr 360px; gap: 20px;
     }
 
     @media (max-width: 960px){
@@ -138,6 +138,66 @@
     }
 
     .muted{ color: var(--muted); font-size: 13px; }
+    .pet-top {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.pet-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+}
+
+.mat-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 0 4px;
+}
+
+.mat-icon {
+  width: 28px;
+  height: 28px;
+}
+.mat-line {
+  display: flex;
+  justify-content: center;
+  gap: 14px;      /* 数字之间的距离 */
+  font-size: 16px;
+}
+.mat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 和上面四个图标一一对应 */
+  text-align: center;                    /* 让数字居中 */
+  column-gap: 10px;                      /* 让 spacing 与图标一致 */
+  font-size: 16px;
+  padding-top: 4px;                      /* 微调数字与图标的垂直距离 */
+}
+
+.mat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  column-gap: 10px;
+}
+/* 适用于宠物数量 > 2 的组 */
+.pet-many {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+  gap: 6px;
+  justify-items: center;
+}
+
+.calc-icon {
+  width: 26px;
+  height: 26px;
+  margin: 0 3px; /* 调整左右间距 */
+  vertical-align: middle;
+}
+
 
   </style>
 </head>
@@ -155,91 +215,390 @@
 
   <main class="container">
 
-    <!-- ===== 左侧宠物升级表格（无数据） ===== -->
-    <section class="card">
+    <section class="card table-wrap" aria-label="宠物升级表">
       <table id="pet-table">
         <thead>
           <tr>
-            <th>等级区间</th>
-            <th>宠物 A</th>
-            <th>宠物 B</th>
-            <th>宠物 C</th>
-            <th>宠物 D</th>
-            <th>宠物 E</th>
-            <th>宠物 F</th>
-            <th>宠物 G</th>
+            <th>等级</th>
+        
+            <!-- 宠物 A -->
+            <th>
+              <div class="pet-top">
+                <img src="img/pet1.png" class="pet-icon">
+              </div>
+              <div class="mat-row">
+                <img src="img/liang.png" class="mat-icon">
+                <img src="img/shu.png" class="mat-icon">
+                <img src="img/ye.png" class="mat-icon">
+                <img src="img/zhen.png" class="mat-icon">
+              </div>
+            </th>
+        
+            <!-- 宠物 B + C -->
+            <th>
+              <div class="pet-top">
+                <img src="img/pet2.png" class="pet-icon">
+                <img src="img/pet3.png" class="pet-icon">
+              </div>
+              <div class="mat-row">
+                <img src="img/liang.png" class="mat-icon">
+                <img src="img/shu.png" class="mat-icon">
+                <img src="img/ye.png" class="mat-icon">
+                <img src="img/zhen.png" class="mat-icon">
+              </div>
+            </th>
+        
+            <!-- 宠物 D + E -->
+            <th>
+              <div class="pet-top">
+                <img src="img/pet4.png" class="pet-icon">
+                <img src="img/pet5.png" class="pet-icon">
+              </div>
+              <div class="mat-row">
+                <img src="img/liang.png" class="mat-icon">
+                <img src="img/shu.png" class="mat-icon">
+                <img src="img/ye.png" class="mat-icon">
+                <img src="img/zhen.png" class="mat-icon">
+              </div>
+            </th>
+        
+            <!-- 宠物 F + G -->
+            <th>
+              <div class="pet-top">
+                <img src="img/pet6.png" class="pet-icon">
+                <img src="img/pet7.png" class="pet-icon">
+              </div>
+              <div class="mat-row">
+                <img src="img/liang.png" class="mat-icon">
+                <img src="img/shu.png" class="mat-icon">
+                <img src="img/ye.png" class="mat-icon">
+                <img src="img/zhen.png" class="mat-icon">
+              </div>
+            </th>
+
+            <th>
+              <div class="pet-top pet-many">
+                <img src="img/pet8.png"  class="pet-icon">
+                <img src="img/pet9.png"  class="pet-icon">
+                <img src="img/pet10.png" class="pet-icon">
+                <img src="img/pet11.png" class="pet-icon">
+                <img src="img/pet12.png" class="pet-icon">
+                <img src="img/pet13.png" class="pet-icon">
+                <img src="img/pet14.png" class="pet-icon">
+              </div>
+              <div class="mat-row">
+                <img src="img/liang.png" class="mat-icon">
+                <img src="img/shu.png" class="mat-icon">
+                <img src="img/ye.png" class="mat-icon">
+                <img src="img/zhen.png" class="mat-icon">
+              </div>
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <!-- 空行，等你后续填入 -->
-          <tr><td>1-10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>11-20</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>21-30</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>31-40</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>41-50</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>51-60</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>61-70</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>71-80</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>81-90</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          <tr><td>91-100</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        </tbody>
+        <tbody id="pet-body"></tbody>
       </table>
     </section>
   
-    <!-- ===== 右侧累加计算器（空逻辑） ===== -->
     <aside class="card aside">
       <div class="panel">
         <h2>升级计算器</h2>
-  
+    
         <div class="field">
-          <label>宠物：</label>
+          <label>宠物类型：</label>
           <select id="pet-select"></select>
         </div>
-  
+    
         <div class="field">
           <label>起始等级：</label>
           <select id="start"></select>
         </div>
-  
+    
         <div class="field">
           <label>目标等级：</label>
           <select id="end"></select>
         </div>
-  
-        <button class="btn">计算</button>
-  
-        <div class="result">
-          <div class="muted">尚未计算</div>
+    
+        <button id="add-btn" class="btn">添加</button>
+    
+        <div id="calc-list" class="result" style="margin-top:12px; padding: 5px;">
+          <div class="muted">暂无记录</div>
         </div>
+    
+        <button id="clear-btn" class="btn" style="margin-top:12px;background:#ef4444;">
+          清空
+        </button>
       </div>
     </aside>
+    
   
   </main>
   
-  <script>
-    // 空 JS（后续你给我公式，我帮你写计算逻辑）
+<script>
+  const petData = [
+  {
+    level: "1-10",
+    group1: { shu: 15, ye: 0, zhen: 0, liang: 1715 },
+    group2: { shu: 20, ye: 0, zhen: 0, liang: 2530 },
+    group3: { shu: 25, ye: 0, zhen: 0, liang: 3795 },
+    group4: { shu: 30, ye: 0, zhen: 0, liang: 5060 },
+    group5: { shu: 35, ye: 0, zhen: 0, liang: 6325 },
+  },
+  {
+    level: "11-20",
+    group1: { shu: 30, ye: 0, zhen: 0, liang: 3180 },
+    group2: { shu: 40, ye: 0, zhen: 0, liang: 5360 },
+    group3: { shu: 50, ye: 0, zhen: 0, liang: 8040 },
+    group4: { shu: 60, ye: 0, zhen: 0, liang: 10720 },
+    group5: { shu: 70, ye: 0, zhen: 0, liang: 13400 },
+  },
+  {
+    level: "21-30",
+    group1: { shu: 45, ye: 10, zhen: 0, liang: 5010 },
+    group2: { shu: 60, ye: 10, zhen: 0, liang: 9020 },
+    group3: { shu: 75, ye: 10, zhen: 0, liang: 13530 },
+    group4: { shu: 95, ye: 10, zhen: 0, liang: 18040 },
+    group5: { shu: 110, ye: 15, zhen: 0, liang: 22550 },
+  },
+  {
+    level: "31-40",
+    group1: { shu: 60, ye: 20, zhen: 0, liang: 7660 },
+    group2: { shu: 90, ye: 20, zhen: 0, liang: 14320 },
+    group3: { shu: 100, ye: 20, zhen: 0, liang: 21480 },
+    group4: { shu: 125, ye: 20, zhen: 0, liang: 28640 },
+    group5: { shu: 145, ye: 35, zhen: 0, liang: 35800 },
+  },
+  {
+    level: "41-50",
+    group1: { shu: 90, ye: 30, zhen: 10, liang: 11300 },
+    group2: { shu: 130, ye: 30, zhen: 10, liang: 21620 },
+    group3: { shu: 155, ye: 30, zhen: 10, liang: 32430 },
+    group4: { shu: 190, ye: 30, zhen: 10, liang: 43240 },
+    group5: { shu: 220, ye: 50, zhen: 10, liang: 54050 },
+  },
+  {
+    level: "51-60",
+    group1: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group2: { shu: 175, ye: 50, zhen: 20, liang: 30920 },
+    group3: { shu: 200, ye: 50, zhen: 20, liang: 46380 },
+    group4: { shu: 250, ye: 50, zhen: 20, liang: 61840 },
+    group5: { shu: 290, ye: 65, zhen: 20, liang: 77300 },
+  },
+  {
+    level: "61-70",
+    group1: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group2: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group3: { shu: 255, ye: 80, zhen: 40, liang: 63300 },
+    group4: { shu: 310, ye: 80, zhen: 40, liang: 84400 },
+    group5: { shu: 365, ye: 85, zhen: 40, liang: 105500 },
+  },
+  {
+    level: "71-80",
+    group1: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group2: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group3: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group4: { shu: 380, ye: 100, zhen: 60, liang: 108480 },
+    group5: { shu: 440, ye: 100, zhen: 60, liang: 135600 },
+  },
+  {
+    level: "81-90",
+    group1: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group2: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group3: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group4: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group5: { shu: 585, ye: 115, zhen: 80, liang: 172000 },
+  },
+  {
+    level: "91-100",
+    group1: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group2: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group3: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group4: { shu: 0, ye: 0, zhen: 0, liang: 0 },
+    group5: { shu: 730, ye: 135, zhen: 100, liang: 212100 },
+  }
   
-    const pets = ["宠物 A","宠物 B","宠物 C","宠物 D","宠物 E","宠物 F","宠物 G"];
-    const petSel = document.querySelector("#pet-select");
-  
-    pets.forEach(p=>{
-      const op=document.createElement("option");
-      op.value=p;
-      op.textContent=p;
-      petSel.appendChild(op);
-    });
-  
-    const startSel=document.querySelector("#start");
-    const endSel=document.querySelector("#end");
-    for(let i=1;i<=100;i++){
-      const o1=document.createElement("option");
-      o1.value=i;o1.textContent=i+"级";
-      startSel.appendChild(o1);
-  
-      const o2=document.createElement("option");
-      o2.value=i;o2.textContent=i+"级";
-      endSel.appendChild(o2);
+];
+
+const petBody = document.getElementById("pet-body");
+
+// 渲染宠物表格（横向四材料）
+function renderPetTable() {
+  petBody.innerHTML = "";
+
+  petData.forEach(row => {
+    const tr = document.createElement("tr");
+
+    let html = `<td>${row.level}</td>`;
+
+    // 5 组宠物（上面你有 5 列图标）
+    for (let i = 1; i <= 5; i++) {
+      const g = row["group" + i];
+
+      html += `
+  <td>
+    <div class="mat-grid">
+      <div>${g.liang}</div>
+      <div>${g.shu}</div>
+      <div>${g.ye}</div>
+      <div>${g.zhen}</div>
+    </div>
+  </td>
+`;
+
     }
+
+    tr.innerHTML = html;
+    petBody.appendChild(tr);
+  });
+}
+
+renderPetTable();
+
+
+
+const pets = ["白色","绿色", "蓝色","紫色","金色"];
+const petSel = document.querySelector("#pet-select");
+
+pets.forEach(p=>{
+  const op=document.createElement("option");
+  op.value=p;
+  op.textContent=p;
+  petSel.appendChild(op);
+});
+  
+    // 起始等级：1，然后 10、20、30…100
+const startSel = document.querySelector("#start");
+const endSel = document.querySelector("#end");
+
+// 1 级（手动加）
+let first = document.createElement("option");
+first.value = 1;
+first.textContent = "1级";
+startSel.appendChild(first);
+
+// 后续 10 的倍数
+for (let i = 10; i <= 100; i += 10) {
+  const o1 = document.createElement("option");
+  o1.value = i;
+  o1.textContent = i + "级";
+  startSel.appendChild(o1);
+}
+
+// 目标等级：10、20、30…100
+for (let i = 10; i <= 100; i += 10) {
+  const o2 = document.createElement("option");
+  o2.value = i;
+  o2.textContent = i + "级";
+  endSel.appendChild(o2);
+}
+
+
+// 选择宠物与 group 对应关系
+const petGroupMap = {
+  "白色": "group1",
+  "绿色": "group2",
+  "蓝色": "group3",
+  "紫色": "group4",
+  "金色": "group5"
+};
+
+// 保存多条数据
+let calcList = [];
+
+// 渲染右侧列表
+function renderCalcList() {
+  const box = document.querySelector("#calc-list");
+
+  if (calcList.length === 0) {
+    box.innerHTML = `<div class="muted">暂无记录</div>`;
+    return;
+  }
+
+  let total = { liang:0, shu:0, ye:0, zhen:0 };
+
+  let html = calcList.map((item, index) => {
+    total.liang += item.liang;
+    total.shu   += item.shu;
+    total.ye    += item.ye;
+    total.zhen  += item.zhen;
+
+    return `
+      <div style="padding:8px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between">
+          <span>${item.pet}：${item.start}级 → ${item.end}级</span>
+          <button data-index="${index}" class="del-btn" style="
+            background:#ef4444;color:white;border:none;padding:3px 8px;border-radius:6px;cursor:pointer;">
+            删除
+          </button>
+        </div>
+
+        <div style="margin-top:6px;">
+          <img src="img/liang.png" class="calc-icon"> ${item.liang}
+          <img src="img/shu.png"   class="calc-icon"> ${item.shu}
+          <img src="img/ye.png"    class="calc-icon"> ${item.ye}
+          <img src="img/zhen.png"  class="calc-icon"> ${item.zhen}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  html += `
+    <hr style="margin:10px 0;border-color:var(--border)">
+    <div>
+      <b>总计：</b>
+      <img src="img/liang.png" class="calc-icon"> ${total.liang}
+      <img src="img/shu.png"   class="calc-icon"> ${total.shu}
+      <img src="img/ye.png"    class="calc-icon"> ${total.ye}
+      <img src="img/zhen.png"  class="calc-icon"> ${total.zhen}
+
+    </div>
+  `;
+
+  box.innerHTML = html;
+
+  document.querySelectorAll(".del-btn").forEach(btn=>{
+    btn.onclick = function(){
+      const i = this.dataset.index;
+      calcList.splice(i,1);
+      renderCalcList();
+    }
+  });
+}
+
+// 添加按钮
+document.querySelector("#add-btn").onclick = function () {
+
+  const pet = document.querySelector("#pet-select").value;
+  const start = parseInt(document.querySelector("#start").value);
+  const end   = parseInt(document.querySelector("#end").value);
+
+  if (end <= start) {
+    alert("目标等级必须高于起始等级！");
+    return;
+  }
+
+  const groupKey = petGroupMap[pet];
+
+  let liang=0, shu=0, ye=0, zhen=0;
+
+  for (let row of petData) {
+    let [low, high] = row.level.split("-").map(Number);
+    if (high <= start || low > end) continue;
+    liang += row[groupKey].liang;
+    shu   += row[groupKey].shu;
+    ye    += row[groupKey].ye;
+    zhen  += row[groupKey].zhen;
+  }
+
+  calcList.push({ pet, start, end, liang, shu, ye, zhen });
+  renderCalcList();
+};
+
+// 清空
+document.querySelector("#clear-btn").onclick = function(){
+  calcList = [];
+  renderCalcList();
+};
+
   
   </script>
   
