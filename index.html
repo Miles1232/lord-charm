@@ -87,6 +87,87 @@
 .goog-te-banner {
     display: none !important;
 } */
+/* 悬浮按钮 */
+.donate-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  padding: 12px 18px;
+  font-size: 15px;
+  background: linear-gradient(90deg, #f59e0b, #ef4444, #22d3ee);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.donate-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* 右侧遮罩层 */
+.donate-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.25s;
+  z-index: 998;
+}
+
+/* 面板本体 */
+.donate-panel {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  height: 100vh;
+  background: #111827;
+  border-left: 1px solid #1f2937;
+  padding: 20px;
+  box-shadow: -4px 0 10px rgba(0,0,0,.4);
+  transition: 0.3s;
+  z-index: 999;
+  text-align: center;
+}
+
+.donate-panel h2 {
+  margin-top: 10px;
+  color: #7dd3fc;
+}
+
+.tip {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.donate-qrcode {
+  width: 80%;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 10px rgba(0,0,0,.4);
+  margin: 10px auto;
+}
+
+.thanks {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-top: 10px;
+}
+ 
+/* 打开状态 */
+.donate-mask.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.donate-panel.show {
+  right: 0;
+}
 
   </style>
 </head>
@@ -177,6 +258,21 @@
       </div>
     </aside>
   </main>
+
+  <button id="donateBtn" class="donate-btn">支持一下 ❤️</button>
+  <!-- 遮罩 -->
+  <div id="donateMask" class="donate-mask"></div>
+
+  <!-- 右侧侧边栏 -->
+  <div id="donatePanel" class="donate-panel">
+      <h2>支持一下开发者 🐳</h2>
+      <p class="tip">如果本工具对你有帮助，可以扫码打赏，感谢支持 ❤️</p>
+
+      <img src="img/pay.png" class="donate-qrcode">
+
+      <p class="thanks">你的支持是我持续更新的动力！</p>
+  </div>
+
   <!-- <footer>
     示例，便于二次开发与自定义样式。 | 由 <a href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> 托管
   </footer> -->
@@ -383,20 +479,24 @@ document.querySelector("#acc-clear").onclick = function () {
   renderAccList();
 };
 
+const btn = document.getElementById("donateBtn");
+const panel = document.getElementById("donatePanel");
+const mask = document.getElementById("donateMask");
+
+btn.onclick = () => {
+  panel.classList.add("show");
+  mask.classList.add("show");
+};
+
+mask.onclick = () => {
+  panel.classList.remove("show");
+  mask.classList.remove("show");
+};
+
+
 </script>
 
-<!-- <script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement(
-      {
-        pageLanguage: 'zh-CN',
-        includedLanguages: 'zh-CN,zh-TW,en',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-      },
-      'google_translate_element'
-    );
-  }
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+
+
 </body>
 </html>
