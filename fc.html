@@ -267,35 +267,93 @@ for (const building in data) {
   let items = [];
   
   function render() {
-    const box = document.getElementById("list");
-  
-    if (items.length === 0) {
-      box.innerHTML = `<div class="muted">暂无记录</div>`;
-      return;
-    }
-  
-    let totalFire = 0;
-    let totalRefine = 0;
-  
-    let html = items.map(x => {
-      totalFire += x.fire;
-      totalRefine += x.refine;
-  
-      return `
-        <div style="margin-bottom:10px;">
-          <b>${x.build}</b>：等级 ${x.start} → ${x.end}<br>
-          火晶 <b>${x.fire}</b> ｜ 精炼 <b>${x.refine}</b>
-        </div>
-      `;
-    }).join("");
-  
-    html += `
-      <hr style="margin:10px 0; border-color:var(--border);">
-      <div><b>总计：</b> 火晶 ${totalFire} ｜ 精炼火晶 ${totalRefine}</div>
-    `;
-  
-    box.innerHTML = html;
+  const box = document.getElementById("list");
+
+  if (items.length === 0) {
+    box.innerHTML = `<div class="muted">暂无记录</div>`;
+    return;
   }
+
+  let totalFire = 0;
+  let totalRefine = 0;
+
+  let html = items.map((x, index) => {
+    totalFire += x.fire;
+    totalRefine += x.refine;
+
+    return `
+      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:4px;
+        ">
+          <span>
+            <b>${x.build}</b>：火晶 ${x.start} → 火晶 ${x.end}
+          </span>
+
+          <button 
+            class="del-btn"
+            data-index="${index}"
+            style="
+              background:#ef4444;
+              border:none;
+              padding:4px 10px;
+              border-radius:6px;
+              color:white;
+              cursor:pointer;
+              font-size:12px;
+            ">
+            删除
+          </button>
+        </div>
+
+        火晶 <b>${x.fire}</b> ｜ 精炼 <b>${x.refine}</b>
+      </div>
+    `;
+  }).join("");
+
+  html += `
+  <hr style="margin:10px 0; border-color:var(--border);">
+
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  ">
+  
+    <span><b>总计：</b></span>
+
+    <div style="display:flex; align-items:center; gap:4px;">
+      <img src="img/fc.png" style="width:18px;height:18px;">
+      <span>火晶</span>
+      <b>${totalFire}</b>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:4px;">
+      <img src="img/rfc.png" style="width:18px;height:18px;">
+      <span>精炼火晶</span>
+      <b>${totalRefine}</b>
+    </div>
+
+  </div>
+`;
+
+
+  box.innerHTML = html;
+
+  // 🔥绑定删除按钮
+  document.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = function () {
+      const i = parseInt(this.dataset.index);
+      items.splice(i, 1);   // 删除该条记录
+      render();             // 刷新
+    };
+  });
+}
   
   document.getElementById("add").onclick = () => {
     const b = document.getElementById("build").value;

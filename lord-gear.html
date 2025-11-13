@@ -22,7 +22,7 @@
     nav a { color: #7dd3fc; font-weight: 600; text-decoration: none; }
     nav a:hover { text-decoration: underline; }
 
-    .container { max-width: 1180px; margin: 0 auto; padding: 16px 20px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 16px 20px; display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
     @media (max-width: 960px) { .container { grid-template-columns: 1fr; } .aside { position: static; } }
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
@@ -44,6 +44,13 @@
     #old-calc-panel {
       display: none;
     }
+    .mat-icon {
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+  opacity: 0.9;
+}
+
   </style>
 </head>
 <body>
@@ -62,38 +69,35 @@
       <table id="equip-table">
         <thead>
           <tr>
-            <!-- <th>编号</th> -->
-            <th>等阶</th>
-            <th>合金</th>
-            <th>抛光液</th>
-            <th>卷轴</th>
-            <th>月光石</th>
+            <th>等级</th>
+        
+            <th>
+              <img src="img/alloy.png" class="mat-icon">
+              合金
+            </th>
+        
+            <th>
+              <img src="img/solution.png" class="mat-icon">
+              抛光液
+            </th>
+        
+            <th>
+              <img src="img/plan.png" class="mat-icon">
+              卷轴
+            </th>
+        
+            <th>
+              <img src="img/amber.png" class="mat-icon">
+              琥珀
+            </th>
           </tr>
         </thead>
+        
         <tbody></tbody>
       </table>
     </section>
 
     <aside class="aside card">
-      <div class="panel" id="old-calc-panel">
-        <h2>升级计算机</h2>
-        <div class="field">
-          <label for="start">起始编号：</label>
-          <select id="start"></select>
-        </div>
-        <div class="field">
-          <label for="end">最终编号：</label>
-          <select id="end"></select>
-        </div>
-        <div class="field">
-          <label for="count">件数：</label>
-          <input id="count" type="number" min="1" step="1" value="1" />
-        </div>
-        <button id="calc" class="btn">计算</button>
-        <div class="result" id="result">
-          <div class="muted">请选择等级并输入件数后点击“计算”。</div>
-        </div>
-      </div>
 
       <div class="panel">
         <h2>材料计算器</h2>
@@ -110,12 +114,13 @@
 
         <div class="field">
           <label for="acc-count">件数：</label>
-          <input id="acc-count" type="number" min="1" value="1">
-        </div>
+          <select id="acc-count">
+          </select>
+        </div> 
 
         <button id="acc-add" class="btn">添加</button>
 
-        <div id="acc-list" class="result" style="margin-top:12px;">
+        <div id="acc-list" class="result" style="margin-top:12px; padding: 5px;">
           <div class="muted">暂无记录</div>
         </div>
 
@@ -189,44 +194,11 @@
       tbody.appendChild(tr);
     });
 
-    // 填充下拉
-    const startSel = document.querySelector('#start');
-    const endSel = document.querySelector('#end');
-    rows.forEach(r => {
-      const o1 = document.createElement('option'); o1.value = r.id; o1.textContent = r.id; startSel.appendChild(o1);
-      const o2 = document.createElement('option'); o2.value = r.id; o2.textContent = r.id; endSel.appendChild(o2);
-    });
-    startSel.value = 1; endSel.value = 1;
-
-    // 计算
-    function fmt(n){ return n.toLocaleString('zh-Hans-CN'); }
-    function calc(){
-      const s = parseInt(startSel.value, 10);
-      const e = parseInt(endSel.value, 10);
-      const c = Math.max(1, parseInt(document.querySelector('#count').value || '1', 10));
-      if(e < s){
-        document.querySelector('#result').innerHTML = '<span class="muted">最终编号不能小于起始编号。</span>';
-        return;
-      }
-      let alloy=0, polish=0, scroll=0, moon=0;
-      for(const r of rows){
-        if(r.id>=s && r.id<=e){ alloy+=r.alloy; polish+=r.polish; scroll+=r.scroll; moon+=r.moon; }
-      }
-      alloy*=c; polish*=c; scroll*=c; moon*=c;
-      document.querySelector('#result').innerHTML = `
-        <div>合金：<strong>${fmt(alloy)}</strong></div>
-        <div>抛光液：<strong>${fmt(polish)}</strong></div>
-        <div>卷轴：<strong>${fmt(scroll)}</strong></div>
-        <div>月光石：<strong>${fmt(moon)}</strong></div>
-        <div class="muted" style="margin-top:8px;">区间：${s} → ${e}，件数：${c}</div>
-      `;
-    }
-    document.querySelector('#calc').addEventListener('click', calc);
     /* =============================
        ✨ 区间累加计算器（核心功能）
        ============================= */
 
-       const accStart = document.querySelector('#acc-start');
+    const accStart = document.querySelector('#acc-start');
     const accEnd   = document.querySelector('#acc-end');
 
     /* 填充累加计算器下拉 */
@@ -237,47 +209,118 @@
 
     accStart.value = 1;
     accEnd.value = 1;
+    // 填充件数下拉（1~50）
+    const countSel = document.getElementById("acc-count");
+    for(let i = 1; i <= 6; i++){
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = i;
+      countSel.appendChild(opt);
+    }
 
     let accList = []; // 保存多个区间记录
 
     function renderAccList() {
-      const box = document.querySelector('#acc-list');
+  const box = document.querySelector('#acc-list');
 
-      if (accList.length === 0) {
-        box.innerHTML = `<div class="muted">暂无记录</div>`;
-        return;
-      }
+  if (accList.length === 0) {
+    box.innerHTML = `<div class="muted">暂无记录</div>`;
+    return;
+  }
 
-      let tAlloy = 0, tPolish = 0, tScroll = 0, tMoon = 0;
+  let tAlloy = 0, tPolish = 0, tScroll = 0, tMoon = 0;
 
-      let html = accList.map(item => {
-        tAlloy += item.alloy;
-        tPolish += item.polish;
-        tScroll += item.scroll;
-        tMoon  += item.moon;
+  let html = accList.map((item, index) => {
+    tAlloy += item.alloy;
+    tPolish += item.polish;
+    tScroll += item.scroll;
+    tMoon  += item.moon;
 
-        return `
-          <div style="margin-bottom:10px;">
-            区间：${item.startName} → ${item.endName}
-            （× ${item.count}）<br>
-            合金 <b>${item.alloy}</b>｜
-            抛光 <b>${item.polish}</b>｜
-            卷轴 <b>${item.scroll}</b>｜
-            月光石 <b>${item.moon}</b>
-          </div>
-        `;
-      }).join('');
+    return `
+      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+        
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:4px;
+        ">
+          <span>
+            等级：${item.startName} → ${item.endName}
+            （× ${item.count}）
+          </span>
 
-      html += `
-        <hr style="border-color:var(--border); margin:10px 0;">
-        <div>
-          <b>总计：</b>
-          合金 ${tAlloy}｜抛光 ${tPolish}｜卷轴 ${tScroll}｜月光石 ${tMoon}
+          <button class="del-btn"
+            data-index="${index}"
+            style="
+              background:#ef4444;
+              border:none;
+              padding:4px 10px;
+              border-radius:6px;
+              color:white;
+              cursor:pointer;
+              font-size:12px;
+            ">
+            删除
+          </button>
         </div>
-      `;
 
-      box.innerHTML = html;
-    }
+        合金 <b>${item.alloy}</b>｜
+        抛光 <b>${item.polish}</b>｜
+        卷轴 <b>${item.scroll}</b>｜
+        琥珀 <b>${item.moon}</b>
+      </div>
+    `;
+  }).join('');
+
+  html += `
+  <hr style="border-color:var(--border); margin:10px 0;">
+  <div>
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+
+    <b>总计：</b>
+
+    <span style="display:flex; align-items:center; gap:6px;">
+      <img src="img/alloy.png" class="mat-icon">
+      合金 ${tAlloy}
+    </span>
+
+    <span style="display:flex; align-items:center; gap:6px;">
+      <img src="img/solution.png" class="mat-icon">
+      抛光液 ${tPolish}
+    </span>
+  </div>
+
+  <div style="margin-left:60px;">
+
+  <div style="display:flex; align-items:center; gap:12px;">
+
+    <span style="display:flex; align-items:center; gap:6px;">
+      <img src="img/plan.png" class="mat-icon">
+      卷轴 ${tScroll}
+    </span>
+
+    <span style="display:flex; align-items:center; gap:6px;">
+      <img src="img/amber.png" class="mat-icon">
+      琥珀 ${tMoon}
+    </span>
+  </div>
+
+  </div>
+`;
+
+  box.innerHTML = html;
+
+  // 🔥 为每个删除按钮绑定删除事件
+  document.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = function () {
+      const i = parseInt(this.dataset.index);
+      accList.splice(i, 1);  // 删除该记录
+      renderAccList();       // 重新渲染
+    };
+  });
+}
+
 
     /* 添加区间 */
     document.querySelector('#acc-add').onclick = function () {
@@ -285,8 +328,8 @@
       const e = parseInt(accEnd.value);
       const c = Math.max(1, parseInt(document.querySelector('#acc-count').value));
 
-      if (e < s) {
-        alert("最终编号不能小于起始编号！");
+      if (e <= s) {
+        alert("最终等级不能小于起始等级！");
         return;
       }
 

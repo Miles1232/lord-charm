@@ -39,7 +39,7 @@
     nav a { color: #7dd3fc; font-weight: 600; text-decoration: none; }
     nav a:hover { text-decoration: underline; }
 
-    .container { max-width: 1180px; margin: 0 auto; padding: 16px 20px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 16px 20px; display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
     @media (max-width: 960px) { .container { grid-template-columns: 1fr; } .aside { position: static; } }
 
     
@@ -71,16 +71,41 @@
       .container { grid-template-columns: 1fr; }
       .aside { position: static; }
     }
+    th .icon {
+  width: 25px;     /* 图标宽度更小 */
+  height: 25px;    /* 图标高度更小 */
+  object-fit: contain;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+    /* .goog-te-gadget-icon {
+  display: none !important;
+}
+.goog-te-banner-frame {
+    display: none !important;
+}
+.goog-te-banner {
+    display: none !important;
+} */
+
   </style>
 </head>
 <body>
   <header>
-    <h1>领主宝石</h1>
+    <!-- <div style="display:flex; justify-content:space-between; align-items:center; padding:0 20px;"> -->
+
+      <h1 id="title">领主宝石</h1>
+
+      <!-- <div id="google_translate_element" class="lang-box"></div> -->
+
+    <!-- </div> -->
+  
     <nav>
-      <a href="index.html">当前页：领主宝石</a>
-      <a href="lord-gear.html">领主装备</a>
-      <a href="fc.html">火晶升级</a>
-      <a href="pet.html">宠物升级</a>
+      <a id="nav-gem" href="index.html">当前页：领主宝石</a>
+      <a id="nav-gear" href="lord-gear.html">领主装备</a>
+      <a id="nav-fire" href="fc.html">火晶升级</a>
+      <a id="nav-pet" href="pet.html">宠物升级</a>
+      
     </nav>
   </header>
   <!-- <header>
@@ -100,36 +125,25 @@
       <table id="gem-table">
         <thead>
           <tr>
-            <th>等级</th>
-            <th>宝石手册</th>
-            <th>宝石图纸</th>
-            <th>宝石秘典</th>
+            <th>
+              等级
+            </th>
+            <th>
+              <img src="img/guide.png" class="icon"> 宝石手册
+            </th>
+            <th>
+              <img src="img/design.png" class="icon"> 宝石图纸
+            </th>
+            <th>
+              <img src="img/secret.png" class="icon"> 宝石秘典
+            </th>
           </tr>
         </thead>
+        
         <tbody></tbody>
       </table>
     </section>
     <aside class="aside card">
-      <div class="panel" id="old-calc-panel" style="display:none;">
-        <h2>升级计算</h2>
-        <div class="field">
-          <label for="start">起始等级：</label>
-          <select id="start"></select>
-        </div>
-        <div class="field">
-          <label for="end">最终等级：</label>
-          <select id="end"></select>
-        </div>
-        <div class="field">
-          <label for="count">升级数量：</label>
-          <input id="count" type="number" min="1" step="1" value="1" />
-        </div>
-        <button id="calc" class="btn">计算</button>
-        <div class="result" id="result">
-          <div class="muted">请选择等级并输入件数后点击“计算”。</div>
-        </div>
-      </div>
-      
       <!-- <hr style="margin:20px 0; border-color: var(--border);" /> -->
 
       <div class="panel">
@@ -147,12 +161,13 @@
 
         <div class="field">
           <label for="acc-count">升级数量：</label>
-          <input id="acc-count" type="number" min="1" value="1" />
-        </div>      
+          <select id="acc-count">
+          </select>
+        </div>        
 
         <button id="acc-add" class="btn">添加</button>
 
-        <div id="acc-list" class="result" style="margin-top:12px;">
+        <div id="acc-list" class="result" style="margin-top:12px; padding: 5px;">
           <div class="muted">暂无记录</div>
         </div>
 
@@ -165,6 +180,8 @@
   <!-- <footer>
     示例，便于二次开发与自定义样式。 | 由 <a href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> 托管
   </footer> -->
+
+  
   <script>
     const rows = [
       { id: 1, manual: 5, paper: 5, secret: 0 },
@@ -197,37 +214,6 @@
       tbody.appendChild(tr);
     });
 
-    const startSel = document.querySelector('#start');
-    const endSel = document.querySelector('#end');
-    rows.forEach(r => {
-      const o1 = document.createElement('option'); o1.value = r.id; o1.textContent = r.id; startSel.appendChild(o1);
-      const o2 = document.createElement('option'); o2.value = r.id; o2.textContent = r.id; endSel.appendChild(o2);
-    });
-    startSel.value = 1; endSel.value = 1;
-
-    function calc() {
-      const s = parseInt(startSel.value, 10);
-      const e = parseInt(endSel.value, 10);
-      const c = Math.max(1, parseInt(document.querySelector('#count').value || '1', 10));
-      if (e < s) {
-        document.querySelector('#result').innerHTML = '<span class="muted">最终编号不能小于起始编号。</span>';
-        return;
-      }
-      let manual = 0, paper = 0, secret = 0;
-      for (const r of rows) {
-        if (r.id >= s && r.id <= e) {
-          manual += r.manual; paper += r.paper; secret += r.secret;
-        }
-      }
-      manual *= c; paper *= c; secret *= c;
-      document.querySelector('#result').innerHTML = `
-        <div>共需要：<strong>${manual.toLocaleString('zh-Hans-CN')}</strong> × 宝石手册</div>
-        <div>共需要：<strong>${paper.toLocaleString('zh-Hans-CN')}</strong> × 宝石图纸</div>
-        <div>共需要：<strong>${secret.toLocaleString('zh-Hans-CN')}</strong> × 宝石秘典</div>
-        <div class="muted" style="margin-top:8px;">区间：${s} → ${e}，件数：${c}</div>
-      `;
-    }
-    document.querySelector('#calc').addEventListener('click', calc);
 // ======== 区间累加计算器（支持升级件数） ========
 
 // 填充下拉框
@@ -245,6 +231,14 @@ rows.forEach(r => {
   o2.textContent = r.id;
   accEndSel.appendChild(o2);
 });
+// 填充升级数量下拉框（1 ~ 16）
+const countSel = document.getElementById("acc-count");
+for(let i = 1; i <= 16; i++){
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = i;
+  countSel.appendChild(opt);
+}
 
 accStartSel.value = 1;
 accEndSel.value = 1;
@@ -262,27 +256,89 @@ function renderAccList() {
 
   let totalManual = 0, totalPaper = 0, totalSecret = 0;
 
-  let html = accRanges.map(item => {
+  let html = accRanges.map((item, index) => {
     totalManual += item.manual;
     totalPaper += item.paper;
     totalSecret += item.secret;
 
     return `
-      <div style="margin-bottom:10px;">
-        等级：<b>${item.start} → ${item.end}</b>  
-        （数量 × ${item.count}）<br>
-        手册 <b>${item.manual}</b> ｜ 图纸 <b>${item.paper}</b> ｜ 秘典 <b>${item.secret}</b>
+      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+        
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:4px;">
+          
+          <span>
+            等级：<b>${item.start} → ${item.end}</b>
+            （数量 × ${item.count}）
+          </span>
+
+          <button class="del-btn"
+            data-index="${index}"
+            style="
+              background:#ef4444;
+              border:none;
+              padding:4px 10px;
+              border-radius:6px;
+              color:white;
+              cursor:pointer;
+              font-size:12px;">
+            删除
+          </button>
+
+        </div>
+
+        手册 <b>${item.manual}</b>｜
+        图纸 <b>${item.paper}</b>｜
+        秘典 <b>${item.secret}</b>
+
       </div>
     `;
   }).join("");
 
   html += `
-    <hr style="border-color:var(--border); margin:10px 0;">
-    <div><b>总计：</b> 手册 ${totalManual} ｜ 图纸 ${totalPaper} ｜ 秘典 ${totalSecret}</div>
-  `;
+  <hr style="margin:10px 0; border-color:var(--border);">
+  <div style="display:flex; align-items:center; gap:12px; font-size:15px;">
+    <b>总计：</b>
+    <!-- 手册 -->
+    <div style="display:flex; align-items:center; gap:4px;">
+      <img src="img/guide.png" style="width:18px;height:18px;">
+      <span>手册</span>
+      <span> ${totalManual} </span>
+    </div>
+
+    <!-- 图纸 -->
+    <div style="display:flex; align-items:center; gap:4px;">
+      <img src="img/design.png" style="width:18px;height:18px;">
+      <span>图纸</span>
+      <span> ${totalPaper} </span>
+    </div>
+
+    <!-- 秘典 -->
+    <div style="display:flex; align-items:center; gap:4px;">
+      <img src="img/secret.png" style="width:18px;height:18px;">
+      <span>秘典</span>
+      <span> ${totalSecret} </span>
+    </div>
+
+  </div>
+`;
+
 
   box.innerHTML = html;
+
+  // 绑定删除事件
+  document.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = function () {
+      const i = parseInt(this.dataset.index);
+      accRanges.splice(i, 1);
+      renderAccList();
+    };
+  });
 }
+
 
 // 添加区间
 document.querySelector("#acc-add").onclick = function () {
@@ -290,7 +346,7 @@ document.querySelector("#acc-add").onclick = function () {
   const e = parseInt(accEndSel.value);
   const c = Math.max(1, parseInt(document.querySelector("#acc-count").value));
 
-  if (e < s) {
+  if (e <= s) {
     alert("最终等级不能小于起始等级！");
     return;
   }
@@ -327,6 +383,20 @@ document.querySelector("#acc-clear").onclick = function () {
   renderAccList();
 };
 
-  </script>
+</script>
+
+<!-- <script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      {
+        pageLanguage: 'zh-CN',
+        includedLanguages: 'zh-CN,zh-TW,en',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      },
+      'google_translate_element'
+    );
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
 </body>
 </html>
