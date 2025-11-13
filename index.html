@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>领主宝石 | 升级计算页面（示例）</title>
+  <title>领主宝石 | 升级计算页面</title>
   <style>
     :root {
       --bg: #0f172a;
       --card: #111827;
       --muted: #9ca3af;
       --fg: #e5e7eb;
-      --accent: #e11d48;
+      --accent: #f59e0b;
       --accent-2: #22d3ee;
       --border: #1f2937;
     }
@@ -57,10 +57,7 @@
     select, input[type="number"] {
       width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: #0b1023; color: var(--fg);
     }
-    .btn {
-      width: 100%; margin-top: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid transparent; color: white; font-weight: 700; cursor: pointer;
-      background: linear-gradient(90deg, var(--accent) 0%, #ef4444 40%, var(--accent-2) 100%);
-    }
+    .btn { width: 100%; margin-top: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid transparent; color: white; font-weight: 700; cursor: pointer; background: linear-gradient(90deg, var(--accent) 0%, #ef4444 40%, var(--accent-2) 100%); }
     .btn:hover { filter: brightness(1.05); }
     .result {
       margin-top: 14px; padding: 12px; border: 1px dashed var(--border); border-radius: 12px; background: #0b1023;
@@ -81,7 +78,9 @@
     <h1>领主宝石</h1>
     <nav>
       <a href="index.html">当前页：领主宝石</a>
-      <a href="lord-gear.html">转到领主装备</a>
+      <a href="lord-gear.html">领主装备</a>
+      <a href="fc.html">火晶升级</a>
+      <a href="pet.html">宠物升级</a>
     </nav>
   </header>
   <!-- <header>
@@ -111,8 +110,8 @@
       </table>
     </section>
     <aside class="aside card">
-      <div class="panel">
-        <h2>升级计算机</h2>
+      <div class="panel" id="old-calc-panel" style="display:none;">
+        <h2>升级计算</h2>
         <div class="field">
           <label for="start">起始等级：</label>
           <select id="start"></select>
@@ -129,6 +128,37 @@
         <div class="result" id="result">
           <div class="muted">请选择等级并输入件数后点击“计算”。</div>
         </div>
+      </div>
+      
+      <!-- <hr style="margin:20px 0; border-color: var(--border);" /> -->
+
+      <div class="panel">
+        <h2>累加计算器</h2>
+
+        <div class="field">
+          <label for="acc-start">起始等级：</label>
+          <select id="acc-start"></select>
+        </div>
+
+        <div class="field">
+          <label for="acc-end">最终等级：</label>
+          <select id="acc-end"></select>
+        </div>
+
+        <div class="field">
+          <label for="acc-count">升级数量：</label>
+          <input id="acc-count" type="number" min="1" value="1" />
+        </div>      
+
+        <button id="acc-add" class="btn">添加</button>
+
+        <div id="acc-list" class="result" style="margin-top:12px;">
+          <div class="muted">暂无记录</div>
+        </div>
+
+        <button id="acc-clear" class="btn" style="margin-top:12px;background:#ef4444;">
+          清空
+        </button>
       </div>
     </aside>
   </main>
@@ -198,6 +228,105 @@
       `;
     }
     document.querySelector('#calc').addEventListener('click', calc);
+// ======== 区间累加计算器（支持升级件数） ========
+
+// 填充下拉框
+const accStartSel = document.querySelector("#acc-start");
+const accEndSel = document.querySelector("#acc-end");
+
+rows.forEach(r => {
+  const o1 = document.createElement("option");
+  o1.value = r.id;
+  o1.textContent = r.id;
+  accStartSel.appendChild(o1);
+
+  const o2 = document.createElement("option");
+  o2.value = r.id;
+  o2.textContent = r.id;
+  accEndSel.appendChild(o2);
+});
+
+accStartSel.value = 1;
+accEndSel.value = 1;
+
+// 区间数据
+let accRanges = [];
+
+function renderAccList() {
+  const box = document.querySelector("#acc-list");
+
+  if (accRanges.length === 0) {
+    box.innerHTML = `<div class="muted">暂无记录</div>`;
+    return;
+  }
+
+  let totalManual = 0, totalPaper = 0, totalSecret = 0;
+
+  let html = accRanges.map(item => {
+    totalManual += item.manual;
+    totalPaper += item.paper;
+    totalSecret += item.secret;
+
+    return `
+      <div style="margin-bottom:10px;">
+        等级：<b>${item.start} → ${item.end}</b>  
+        （数量 × ${item.count}）<br>
+        手册 <b>${item.manual}</b> ｜ 图纸 <b>${item.paper}</b> ｜ 秘典 <b>${item.secret}</b>
+      </div>
+    `;
+  }).join("");
+
+  html += `
+    <hr style="border-color:var(--border); margin:10px 0;">
+    <div><b>总计：</b> 手册 ${totalManual} ｜ 图纸 ${totalPaper} ｜ 秘典 ${totalSecret}</div>
+  `;
+
+  box.innerHTML = html;
+}
+
+// 添加区间
+document.querySelector("#acc-add").onclick = function () {
+  const s = parseInt(accStartSel.value);
+  const e = parseInt(accEndSel.value);
+  const c = Math.max(1, parseInt(document.querySelector("#acc-count").value));
+
+  if (e < s) {
+    alert("最终等级不能小于起始等级！");
+    return;
+  }
+
+  // 计算区间
+  let manual = 0, paper = 0, secret = 0;
+  for (const r of rows) {
+    if (r.id > s && r.id <= e) {
+      manual += r.manual;
+      paper += r.paper;
+      secret += r.secret;
+    }
+  }
+
+  manual *= c;
+  paper *= c;
+  secret *= c;
+
+  accRanges.push({
+    start: s,
+    end: e,
+    count: c,
+    manual,
+    paper,
+    secret
+  });
+
+  renderAccList();
+};
+
+// 清空
+document.querySelector("#acc-clear").onclick = function () {
+  accRanges = [];
+  renderAccList();
+};
+
   </script>
 </body>
 </html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>火晶升级 | 升级计算页面</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #9ca3af;
+      --fg: #e5e7eb;
+      --accent: #fb923c;   /* 火焰橙色主题 */
+      --accent-2: #22d3ee;
+      --border: #1f2937;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui;
+      color: var(--fg);
+      background: linear-gradient(180deg, #0b1023 0%, #0f172a 100%);
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 { text-align:center; font-size:32px; margin:16px 0; letter-spacing:2px; }
+
+    nav { display:flex; justify-content:center; gap:16px; padding-bottom:16px; }
+    nav a { color:#7dd3fc; font-weight:600; text-decoration:none; }
+    nav a:hover { text-decoration:underline; }
+
+    /* Layout */
+    .container {
+      max-width:1180px; margin:0 auto; padding:16px 20px;
+      display:grid; grid-template-columns:1fr 320px; gap:20px;
+    }
+    @media(max-width:960px){
+      .container { grid-template-columns:1fr; }
+      .aside { position:static; }
+    }
+
+    .card { background:var(--card); border:1px solid var(--border); border-radius:14px; }
+
+    table { width:100%; border-collapse:collapse; }
+    thead th { background:#0b1224; padding:14px; }
+    tbody td { padding:14px; border-bottom:1px solid var(--border); text-align:center; }
+
+    .panel { padding:16px; }
+    .panel h2 { margin:0 0 12px; }
+
+    .field {
+      display:grid; grid-template-columns:110px 1fr;
+      gap:10px; margin:10px 0;
+    }
+
+    select, input[type="number"] {
+      padding:10px 12px; width:100%;
+      border-radius:10px; border:1px solid var(--border);
+      background:#0b1023; color:var(--fg);
+    }
+
+    .btn {
+      width:100%; padding:12px; margin-top:8px;
+      border-radius:12px; cursor:pointer; font-weight:700; color:white;
+      background:linear-gradient(90deg, var(--accent), #ef4444 40%, var(--accent-2));
+    }
+
+    .result {
+      background:#0b1023; padding:12px; margin-top:14px;
+      border:1px dashed var(--border); border-radius:12px;
+    }
+
+    .muted { color:var(--muted); font-size:13px; }
+    .building-cell {
+  padding: 8px;
+}
+
+.b-wrap {
+  display: flex;
+  align-items: center;   /* 名称垂直居中 */
+  gap: 8px;              /* 图标与名称间距 */
+}
+
+.b-icons {
+  display: flex;
+  flex-direction: column;  /* 两张图纵向排列 */
+  gap: 2px;
+}
+
+.b-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.b-name {
+  font-weight: 600;
+  white-space: nowrap;     /* 名称不换行 */
+}
+
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>火晶升级</h1>
+    <nav>
+      <a href="index.html">领主宝石</a>
+      <a href="lord-gear.html">领主装备</a>
+      <a href="fc.html">当前页：火晶升级</a>
+      <a href="pet.html">宠物升级</a>
+      
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- 左侧可放表格或保持空白 -->
+    <section class="card table-wrap" aria-label="火晶纵向表格">
+        <table id="fire-table" style="min-width:900px;">
+          <thead>
+            <tr>
+              <th style="width:110px;">建筑</th>
+              <th>火晶 1</th>
+              <th>火晶 2</th>
+              <th>火晶 3</th>
+              <th>火晶 4</th>
+              <th>火晶 5</th>
+              <th>火晶 6</th>
+              <th>火晶 7</th>
+              <th>火晶 8</th>
+              <th>火晶 9</th>
+              <th>火晶 10</th>
+            </tr>
+          </thead>
+      
+          <tbody id="fire-body"></tbody>
+        </table>
+      </section>
+      
+      
+  
+    <!-- 右侧累加器 -->
+    <aside class="aside card">
+      <div class="panel">
+        <h2>升级累加计算器</h2>
+  
+        <div class="field">
+          <label>建筑：</label>
+          <select id="build">
+            <option>熔炉</option>
+            <option>大使馆</option>
+            <option>指挥部</option>
+            <option>盾兵营</option>
+            <option>矛兵营</option>
+            <option>弓兵营</option>
+            <option>军医所</option>
+            <option>战争学院</option>
+          </select>
+        </div>
+  
+        <div class="field">
+          <label>当前等级：</label>
+          <select id="start"></select>
+        </div>
+  
+        <div class="field">
+          <label>目标等级：</label>
+          <select id="end"></select>
+        </div>
+  
+        <button id="add" class="btn">添加</button>
+  
+        <div id="list" class="result">
+          <div class="muted">暂无记录</div>
+        </div>
+  
+        <button id="clear" class="btn" style="margin-top:12px;background:#ef4444;">清空</button>
+      </div>
+    </aside>
+  </main>
+  
+  <script>
+  // ========== 空数据结构（你只需修改这里） ==========
+  const data = {
+    "熔炉":     [660,790,1190,1400,1675,900,1080,1080,1260,1575],
+    "大使馆":   [165,195,295,350,415,225,270,270,315,391],
+    "指挥部":   [130,155,235,280,335,180,216,216,252,315],
+    "盾兵营":   [295,355,535,630,750,405,486,486,567,706],
+    "矛兵营":   [295,355,535,630,750,405,486,486,567,706],
+    "弓兵营":   [295,355,535,630,750,405,486,486,567,706],
+    "军医所":   [130,155,235,280,335,180,216,216,252,315],
+    "战争学院": [295,355,535,630,750,405,486,486,567,706],
+  };
+  
+  const refine = {
+    "熔炉":     [0,0,0,0,0,60,90,120,180,420],
+    "大使馆":   [0,0,0,0,0,13,19,30,43,103],
+    "指挥部":   [0,0,0,0,0,12,18,24,36,84],
+    "盾兵营":   [0,0,0,0,0,25,37,54,79,187],
+    "矛兵营":   [0,0,0,0,0,25,37,54,79,187],
+    "弓兵营":   [0,0,0,0,0,25,37,54,79,187],
+    "军医所":   [0,0,0,0,0,12,18,24,36,84],
+    "战争学院": [0,0,0,0,0,25,37,54,79,187],
+  };
+const fireBody = document.querySelector("#fire-body");
+
+for (const building in data) {
+  let tr = document.createElement("tr");
+  let html = `
+  <td class="building-cell">
+    <div class="b-wrap">
+      <div class="b-icons">
+        <img src="img/fc.png" class="b-icon">
+        <img src="img/rfc.png" class="b-icon">
+      </div>
+      <div class="b-name">${building}</div>
+    </div>
+  </td>
+`;
+
+  for (let i = 0; i < 10; i++) {
+
+    // 火晶 1～5 只有一个值
+    if (i < 5) {
+      html += `<td>${data[building][i]}</td>`;
+    }
+
+    // 火晶 6～10 显示 “火晶 / 精炼火晶”
+    else {
+      const fire = data[building][i];
+      const ref = refine[building][i];
+
+      html += `
+        <td>
+          <div>${fire}</div>
+          <div style="color:#fbbf24; font-size:12px;">${ref}</div>
+        </td>
+      `;
+    }
+  }
+
+  tr.innerHTML = html;
+  fireBody.appendChild(tr);
+}
+  // ========== 填充等级下拉 1~10 ==========
+  const startSel = document.getElementById("start");
+  const endSel = document.getElementById("end");
+  
+  for (let i = 1; i <= 10; i++) {
+  startSel.innerHTML += `<option value="${i}">火晶 ${i}</option>`;
+  endSel.innerHTML += `<option value="${i}">火晶 ${i}</option>`;
+}
+  
+  startSel.value = 1;
+  endSel.value = 1;
+  
+  // ========== 累加器逻辑 ==========
+  let items = [];
+  
+  function render() {
+    const box = document.getElementById("list");
+  
+    if (items.length === 0) {
+      box.innerHTML = `<div class="muted">暂无记录</div>`;
+      return;
+    }
+  
+    let totalFire = 0;
+    let totalRefine = 0;
+  
+    let html = items.map(x => {
+      totalFire += x.fire;
+      totalRefine += x.refine;
+  
+      return `
+        <div style="margin-bottom:10px;">
+          <b>${x.build}</b>：等级 ${x.start} → ${x.end}<br>
+          火晶 <b>${x.fire}</b> ｜ 精炼 <b>${x.refine}</b>
+        </div>
+      `;
+    }).join("");
+  
+    html += `
+      <hr style="margin:10px 0; border-color:var(--border);">
+      <div><b>总计：</b> 火晶 ${totalFire} ｜ 精炼火晶 ${totalRefine}</div>
+    `;
+  
+    box.innerHTML = html;
+  }
+  
+  document.getElementById("add").onclick = () => {
+    const b = document.getElementById("build").value;
+    const s = parseInt(startSel.value);
+    const e = parseInt(endSel.value);
+  
+    if (e <= s) {
+      alert("目标等级必须大于当前等级！");
+      return;
+    }
+  
+    let fire = 0, ref = 0;
+  
+    for (let lv = s; lv < e; lv++) {
+      fire += data[b][lv];     // 等级从 1 开始 → 数组索引从 0
+      ref  += refine[b][lv];
+    }
+  
+    items.push({ build: b, start: s, end: e, fire, refine: ref });
+  
+    render();
+  };
+  
+  document.getElementById("clear").onclick = () => {
+    items = [];
+    render();
+  };
+  
+  </script>
+  </body>
+  </html>

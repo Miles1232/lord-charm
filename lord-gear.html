@@ -41,14 +41,19 @@
     .btn:hover { filter: brightness(1.05); }
     .result { margin-top: 14px; padding: 12px; border: 1px dashed var(--border); border-radius: 12px; background: #0b1023; }
     .muted { color: var(--muted); font-size: 13px; }
+    #old-calc-panel {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>领主装备</h1>
     <nav>
-      <a href="index.html">回到领主宝石页</a>
+      <a href="index.html">领主宝石</a>
       <a href="lord-gear.html">当前页：领主装备</a>
+      <a href="fc.html">火晶升级</a>
+      <a href="pet.html">宠物升级</a>
     </nav>
   </header>
 
@@ -57,7 +62,7 @@
       <table id="equip-table">
         <thead>
           <tr>
-            <th>编号</th>
+            <!-- <th>编号</th> -->
             <th>等阶</th>
             <th>合金</th>
             <th>抛光液</th>
@@ -70,7 +75,7 @@
     </section>
 
     <aside class="aside card">
-      <div class="panel">
+      <div class="panel" id="old-calc-panel">
         <h2>升级计算机</h2>
         <div class="field">
           <label for="start">起始编号：</label>
@@ -88,6 +93,35 @@
         <div class="result" id="result">
           <div class="muted">请选择等级并输入件数后点击“计算”。</div>
         </div>
+      </div>
+
+      <div class="panel">
+        <h2>材料计算器</h2>
+
+        <div class="field">
+          <label for="acc-start">起始等级：</label>
+          <select id="acc-start"></select>
+        </div>
+
+        <div class="field">
+          <label for="acc-end">最终等级：</label>
+          <select id="acc-end"></select>
+        </div>
+
+        <div class="field">
+          <label for="acc-count">件数：</label>
+          <input id="acc-count" type="number" min="1" value="1">
+        </div>
+
+        <button id="acc-add" class="btn">添加</button>
+
+        <div id="acc-list" class="result" style="margin-top:12px;">
+          <div class="muted">暂无记录</div>
+        </div>
+
+        <button id="acc-clear" class="btn" style="margin-top:12px;background:#ef4444;">
+          清空
+        </button>
       </div>
     </aside>
   </main>
@@ -141,13 +175,17 @@
       { id:40,  tier: '神话T3-1星',   alloy: 80000, polish: 990,  scroll: 165, moon: 25 },
       { id:41,  tier: '神话T3-2星',   alloy: 83000, polish: 1030, scroll: 170, moon: 25 },
       { id:42,  tier: '神话T3-3星',   alloy: 86000, polish: 1070, scroll: 180, moon: 25 },
-    ];
+      { id: 43, tier: '神话T4',     alloy: 120000, polish: 1500, scroll: 250, moon: 40 },
+      { id: 44, tier: '神话T4-1星', alloy: 140000, polish: 1650, scroll: 275, moon: 40 },
+      { id: 45, tier: '神话T4-2星', alloy: 160000, polish: 1800, scroll: 300, moon: 40 },
+      { id: 46, tier: '神话T4-3星', alloy: 180000, polish: 1950, scroll: 325, moon: 40 },
+          ];
 
     // 渲染表格
     const tbody = document.querySelector('#equip-table tbody');
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${r.id}</td><td>${r.tier}</td><td>${r.alloy}</td><td>${r.polish}</td><td>${r.scroll}</td><td>${r.moon}</td>`;
+      tr.innerHTML = `<td>${r.tier}</td><td>${r.alloy}</td><td>${r.polish}</td><td>${r.scroll}</td><td>${r.moon}</td>`;
       tbody.appendChild(tr);
     });
 
@@ -184,6 +222,99 @@
       `;
     }
     document.querySelector('#calc').addEventListener('click', calc);
+    /* =============================
+       ✨ 区间累加计算器（核心功能）
+       ============================= */
+
+       const accStart = document.querySelector('#acc-start');
+    const accEnd   = document.querySelector('#acc-end');
+
+    /* 填充累加计算器下拉 */
+    rows.forEach(r => {
+      const o1 = document.createElement('option'); o1.value = r.id; o1.textContent = r.tier; accStart.appendChild(o1);
+      const o2 = document.createElement('option'); o2.value = r.id; o2.textContent = r.tier; accEnd.appendChild(o2);
+    });
+
+    accStart.value = 1;
+    accEnd.value = 1;
+
+    let accList = []; // 保存多个区间记录
+
+    function renderAccList() {
+      const box = document.querySelector('#acc-list');
+
+      if (accList.length === 0) {
+        box.innerHTML = `<div class="muted">暂无记录</div>`;
+        return;
+      }
+
+      let tAlloy = 0, tPolish = 0, tScroll = 0, tMoon = 0;
+
+      let html = accList.map(item => {
+        tAlloy += item.alloy;
+        tPolish += item.polish;
+        tScroll += item.scroll;
+        tMoon  += item.moon;
+
+        return `
+          <div style="margin-bottom:10px;">
+            区间：${item.startName} → ${item.endName}
+            （× ${item.count}）<br>
+            合金 <b>${item.alloy}</b>｜
+            抛光 <b>${item.polish}</b>｜
+            卷轴 <b>${item.scroll}</b>｜
+            月光石 <b>${item.moon}</b>
+          </div>
+        `;
+      }).join('');
+
+      html += `
+        <hr style="border-color:var(--border); margin:10px 0;">
+        <div>
+          <b>总计：</b>
+          合金 ${tAlloy}｜抛光 ${tPolish}｜卷轴 ${tScroll}｜月光石 ${tMoon}
+        </div>
+      `;
+
+      box.innerHTML = html;
+    }
+
+    /* 添加区间 */
+    document.querySelector('#acc-add').onclick = function () {
+      const s = parseInt(accStart.value);
+      const e = parseInt(accEnd.value);
+      const c = Math.max(1, parseInt(document.querySelector('#acc-count').value));
+
+      if (e < s) {
+        alert("最终编号不能小于起始编号！");
+        return;
+      }
+
+      let alloy=0, polish=0, scroll=0, moon=0;
+
+      for (const r of rows) {
+        if (r.id > s && r.id <= e) {
+          alloy  += r.alloy;
+          polish += r.polish;
+          scroll += r.scroll;
+          moon   += r.moon;
+        }
+      }
+
+      alloy  *= c;
+      polish *= c;
+      scroll *= c;
+      moon   *= c;
+
+      accList.push({ start:s, end:e, startName: rows.find(r => r.id === s).tier, endName: rows.find(r => r.id === e).tier, count:c, alloy, polish, scroll, moon });
+      renderAccList();
+    };
+
+    /* 清空所有区间 */
+    document.querySelector('#acc-clear').onclick = function () {
+      accList = [];
+      renderAccList();
+    };
   </script>
 </body>
 </html>
