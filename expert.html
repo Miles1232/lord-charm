@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专家升级 | 计算页面</title>
+
+<style>
+/* ========== 全局样式（与你现有页面完全一致） ========== */
+:root{
+  --bg:#0f172a;
+  --card:#111827;
+  --muted:#9ca3af;
+  --fg:#e5e7eb;
+  --border:#1f2937;
+  --accent:#f59e0b;
+  --accent-2:#22d3ee;
+}
+
+body{
+  margin:0;
+  background:linear-gradient(180deg,#0b1023,#0f172a);
+  color:var(--fg);
+  font-family:ui-sans-serif,system-ui;
+  min-height:100vh;
+}
+
+header{
+  position:sticky;top:0;
+  background:rgba(15,23,42,.7);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  z-index:10;
+}
+h1{text-align:center;font-size:32px;margin:18px 0;}
+
+nav{
+  display:flex;justify-content:center;gap:16px;
+  padding:8px 0 16px;
+}
+nav a{color:#7dd3fc;font-weight:600;text-decoration:none;}
+nav a:hover{text-decoration:underline;}
+
+.container{
+  max-width:1450px;
+  margin:0 auto;
+  padding:16px 20px;
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:20px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+.table-wrap{overflow:auto;}
+
+table{width:100%;border-collapse:collapse;}
+thead th{
+  background:#0b1224;
+  position:sticky;top:0;
+}
+th,td{
+  padding:12px 10px;
+  border-bottom:1px solid var(--border);
+  text-align:center;
+}
+
+/* 图标样式 */
+.exp-icon{width:46px;height:46px;border-radius:10px;}
+.skill-icon{width:30px;height:30px;}
+.mat-icon{width:26px;height:26px;}
+
+.pet-top, .skill-row, .mat-row{
+  display:flex;justify-content:center;gap:6px;
+  padding:6px 0;
+}
+
+/* 右侧计算器 */
+.aside{position:sticky;top:72px;}
+.panel{padding:16px;}
+
+.field{
+  display:grid;
+  grid-template-columns:110px 1fr;
+  align-items:center;gap:10px;
+  margin:10px 0;
+}
+
+select{
+  width:100%;padding:10px 12px;
+  border-radius:10px;
+  background:#0b1023;
+  border:1px solid var(--border);
+  color:var(--fg);
+}
+
+.btn{
+  width:100%;padding:12px;
+  border-radius:12px;
+  background:linear-gradient(90deg,var(--accent),#ef4444,var(--accent-2));
+  color:#fff;font-weight:700;
+  cursor:pointer;margin-top:8px;
+}
+
+.result{
+  margin-top:14px;
+  padding:12px;
+  border:1px dashed var(--border);
+  background:#0b1023;
+  border-radius:10px;
+}
+
+.muted{color:var(--muted);font-size:13px;}
+.del-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.del-btn:hover {
+  background: #dc2626;
+}
+
+/* ===== 弹窗背景 ===== */
+.popup-bg{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* ===== 弹窗本体 ===== */
+.popup{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(0,0,0,.6);
+  animation: fadeIn .2s ease-out;
+}
+
+.close-btn{
+  float: right;
+  cursor: pointer;
+  font-size: 28px;
+  margin-top: -6px;
+  color: var(--fg);
+}
+
+.close-btn:hover{
+  color: #ff6b6b;
+}
+
+@keyframes fadeIn{
+  from{ opacity: 0; transform: scale(.92); }
+  to{ opacity: 1; transform: scale(1); }
+}
+
+/* 弹窗背景 */
+.popup-bg{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(5px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* 弹窗框 */
+.popup{
+  width: 600px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 14px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeIn .2s ease-out;
+}
+
+.close-btn{
+  float:right;
+  font-size:28px;
+  cursor:pointer;
+}
+
+.skill-tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.skill-tabs .tab{
+  padding:8px 14px;
+  border-radius:8px;
+  background:#1e293b;
+  border:1px solid var(--border);
+  color:var(--fg);
+  cursor:pointer;
+}
+
+.skill-tabs .tab:hover{
+  background:#334155;
+}
+
+.skill-tabs .active{
+  background:#2563eb;
+  border-color:#2563eb;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(.9);}
+  to{opacity:1; transform:scale(1);}
+}
+.expert-tip{
+  text-align:center;
+  color:#ffd36b;
+  font-size:18px;
+  margin:10px 0 12px;
+  opacity:0.9;
+}
+
+</style>
+</head>
+
+
+<body>
+<header>
+  <h1>专家升级</h1>
+  <nav>
+    <a href="index.html">领主宝石</a>
+    <a href="lord-gear.html">领主装备</a>
+    <a href="fc.html">火晶升级</a>
+    <a href="pet.html">宠物升级</a>
+    <a href="expert.html">当前页：专家升级</a>
+  </nav>
+</header>
+
+
+<main class="container">
+
+<!-- ========== 左侧专家 + 技能表格 ========== -->
+<section class="card table-wrap">
+<div class="expert-tip">点击头像查看技能</div>
+<table id="exp-table">
+  <thead>
+    <tr>
+      <th>等级</th>
+
+      <!-- 六名专家 -->
+      <th>
+        <img src="img/ex1.png" class="exp-icon skill-btn" data-skill="expert1">
+
+        <div class="mat-row">
+            <img src="img/10xp.png" class="mat-icon">
+          <img src="img/stone1.png" class="mat-icon">
+
+        </div>
+      </th>
+
+      <th>
+        <img src="img/ex2.png" class="exp-icon skill-btn" data-skill="expert2">
+
+        <div class="mat-row">
+            <img src="img/10xp.png" class="mat-icon">
+          <img src="img/stone2.png" class="mat-icon">
+        </div>
+      </th>
+
+      <th>
+        <img src="img/ex3.png" class="exp-icon skill-btn" data-skill="expert3">
+
+        <div class="mat-row">
+            <img src="img/10xp.png" class="mat-icon">
+          <img src="img/stone3.png" class="mat-icon">
+        </div>
+      </th>
+
+      <th>
+        <img src="img/ex4.png" class="exp-icon skill-btn" data-skill="expert4">
+
+        <div class="mat-row">
+            <img src="img/10xp.png" class="mat-icon">
+          <img src="img/stone4.png" class="mat-icon">
+        </div>
+      </th>
+
+      <th>
+        <img src="img/ex5.png" class="exp-icon skill-btn" data-skill="expert5">
+
+        <div class="mat-row">
+            <img src="img/10xp.png" class="mat-icon">
+            <img src="img/stone5.png" class="mat-icon">
+        </div>
+      </th>
+
+      <th>
+        <img src="img/ex6.png" class="exp-icon skill-btn" data-skill="expert6">
+
+        <div class="mat-row">
+            <img src="img/10xp.png" class="mat-icon">
+          <img src="img/stone6.png" class="mat-icon">
+        </div>
+      </th>
+    </tr>
+  </thead>
+
+  <tbody id="exp-body">
+    <!-- JS 自动生成 1~100 行 -->
+  </tbody>
+</table>
+</section>
+
+
+
+
+<!-- ========== 右侧计算器 ========== -->
+<aside class="aside card">
+  <div class="panel">
+    <h2>升级计算器</h2>
+
+    <!-- 专家选择 -->
+    <div class="field">
+      <label>专家：</label>
+      <select id="exp-select">
+        <option value="expert1">西里尔</option>
+        <option value="expert2">艾格尼丝</option>
+        <option value="expert3">霍尔格</option>
+        <option value="expert4">罗慕路斯</option>
+        <option value="expert5">巴尔德</option>
+        <option value="expert6">法比安</option>
+      </select>
+    </div>
+
+    <!-- 起始等级 -->
+    <div class="field">
+      <label>起始等级：</label>
+      <select id="exp-start"></select>
+    </div>
+
+    <!-- 目标等级 -->
+    <div class="field">
+      <label>目标等级：</label>
+      <select id="exp-end"></select>
+    </div>
+
+    <button id="exp-add" class="btn">添加</button>
+
+    <!-- 记录列表 -->
+    <div id="exp-list" class="result" style="margin-top:12px; padding: 5px;">
+      <div class="muted">暂无记录</div>
+    </div>
+
+    <button id="exp-clear" class="btn" style="margin-top:12px;background:#ef4444;">
+      清空
+    </button>
+  </div>
+</aside>
+
+
+<!-- ===== 技能弹窗（新版：左技能 + 右计算器） ===== -->
+<div id="skill-popup" class="popup-bg">
+    <div class="popup">
+      <span class="close-btn">&times;</span>
+  
+      <div class="skill-tabs">
+        <button class="tab active" data-tab="1">Skill 1</button>
+        <button class="tab" data-tab="2">Skill 2</button>
+        <button class="tab" data-tab="3">Skill 3</button>
+        <button class="tab" data-tab="4">Skill 4</button>
+      </div>
+  
+      <!-- 左右布局 -->
+      <div id="popup-body" style="display:flex; gap:20px;">
+  
+        <!-- 左侧技能内容 -->
+        <div id="popup-content" style="flex:2;"></div>
+  
+        <!-- 右侧技能计算器 -->
+        <div id="skill-calc" style="
+            flex:1;
+            background:#0b1023;
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:15px;">
+
+            <h3>技能升级计算器</h3>
+
+            <label>选择技能：</label>
+            <select id="calc-skill-select"></select>
+
+            <br><br>
+
+            <label>起始等级：</label>
+            <select id="calc-start"></select>
+
+            <br><br>
+
+            <label>目标等级：</label>
+            <select id="calc-end"></select>
+
+            <button id="skill-add" class="btn" style="margin-top:12px;">添加</button>
+
+            <div id="skill-list" class="result" style="margin-top:14px;">
+            <div class="muted">暂无记录</div>
+            </div>
+
+            <button id="skill-clear" class="btn" style="margin-top:12px;background:#ef4444;">
+            清空
+            </button>
+        </div>
+
+  
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  
+  
+  
+</main>
+
+
+<script>
+// 六名专家升级材料（m1/m2 对应两种材料）
+const expertCost = {
+  expert1: {
+    "1-10":   { m1: 326, m2: 5 },
+    "11-20":  { m1: 430, m2: 10 },
+    "21-30":  { m1: 631, m2: 15 },
+    "31-40":  { m1: 896, m2: 20 },
+    "41-50":  { m1: 1261, m2: 25 },
+    "51-60":  { m1: 1725, m2: 30 },
+    "61-70":  { m1: 2225, m2: 35 },
+    "71-80":  { m1: 2725, m2: 40 },
+    "81-90":  { m1: 3225, m2: 45 },
+    "91-100": { m1: 3725, m2: 50 }
+  },
+  expert2: {
+    "1-10":   { m1: 375, m2: 5 },
+    "11-20":  { m1: 520, m2: 10 },
+    "21-30":  { m1: 761, m2: 15 },
+    "31-40":  { m1: 1079, m2: 20 },
+    "41-50":  { m1: 1517, m2: 25 },
+    "51-60":  { m1: 2070, m2: 30 },
+    "61-70":  { m1: 2670, m2: 35 },
+    "71-80":  { m1: 3270, m2: 40 },
+    "81-90":  { m1: 3870, m2: 45 },
+    "91-100": { m1: 4470, m2: 50 }
+  },
+  expert3: {
+    "1-10":   { "m1": 778,   "m2": 8 },
+    "11-20":  { "m1": 1290,  "m2": 16 },
+    "21-30":  { "m1": 1893,  "m2": 24 },
+    "31-40":  { "m1": 2688,  "m2": 32 },
+    "41-50":  { "m1": 3783,  "m2": 40 },
+    "51-60":  { "m1": 5175,  "m2": 48 },
+    "61-70":  { "m1": 6675,  "m2": 56 },
+    "71-80":  { "m1": 8175,  "m2": 64 },
+    "81-90":  { "m1": 9675,  "m2": 72 },
+    "91-100": { "m1": 11175, "m2": 80 }
+},
+  expert4: {
+  "1-10":   { m1: 1444,  m2: 20 },
+  "11-20":  { m1: 2365,  m2: 40 },
+  "21-30":  { m1: 3471,  m2: 80 },
+  "31-40":  { m1: 4930,  m2: 120 },
+  "41-50":  { m1: 6436,  m2: 160 },
+  "51-60":  { m1: 9490,  m2: 200 },
+  "61-70":  { m1: 12440, m2: 240 },
+  "71-80":  { m1: 15190, m2: 280 },
+  "81-90":  { m1: 17040, m2: 320 },
+  "91-100": { m1: 21490, m2: 360 }
+},
+  expert5: {
+    "1-10":   { m1: 552,  m2: 6  },
+    "11-20":  { m1: 860,  m2: 12 },
+    "21-30":  { m1: 1262, m2: 18 },
+    "31-40":  { m1: 1686, m2: 24 },
+    "41-50":  { m1: 2522, m2: 30 },
+    "51-60":  { m1: 3450, m2: 36 },
+    "61-70":  { m1: 4450, m2: 42 },
+    "71-80":  { m1: 5490, m2: 48 },
+    "81-90":  { m1: 6390, m2: 54 },
+    "91-100": { m1: 7350, m2: 60 }
+  },
+  expert6: {
+    "1-10":   { m1: 1230,  m2: 12 },
+    "11-20":  { m1: 2150,  m2: 24 },
+    "21-30":  { m1: 3105,  m2: 36 },
+    "31-40":  { m1: 3980,  m2: 48 },
+    "41-50":  { m1: 6205,  m2: 60 },
+    "51-60":  { m1: 8375,  m2: 72 },
+    "61-70":  { m1: 11125, m2: 84 },
+    "71-80":  { m1: 13625, m2: 96 },
+    "81-90":  { m1: 16025, m2: 108 },
+    "91-100": { m1: 18625, m2: 120 }
+}
+
+
+};
+
+
+// =================== 自动生成区间 ===================
+const tbody = document.getElementById("exp-body");
+
+// 10个区间标签
+const ranges = [
+  "1-10","11-20","21-30","31-40","41-50",
+  "51-60","61-70","71-80","81-90","91-100"
+];
+
+ranges.forEach(rg=>{
+  const tr = document.createElement("tr");
+
+  tr.innerHTML = `
+    <td>${rg}</td>
+
+    <td>${expertCost.expert1[rg].m1} / ${expertCost.expert1[rg].m2}</td>
+    <td>${expertCost.expert2[rg].m1} / ${expertCost.expert2[rg].m2}</td>
+    <td>${expertCost.expert3[rg].m1} / ${expertCost.expert3[rg].m2}</td>
+    <td>${expertCost.expert4[rg].m1} / ${expertCost.expert4[rg].m2}</td>
+    <td>${expertCost.expert5[rg].m1} / ${expertCost.expert5[rg].m2}</td>
+    <td>${expertCost.expert6[rg].m1} / ${expertCost.expert6[rg].m2}</td>
+  `;
+
+  tbody.appendChild(tr);
+});
+
+
+// 区间数据
+const levelRanges = [
+  "1-10","11-20","21-30","31-40","41-50",
+  "51-60","61-70","71-80","81-90","91-100"
+];
+
+// 你之前定义的 expertCost 保留即可
+// expertCost = { expert1:{"1-10":{m1,m2},...}, ... }
+
+// 填入下拉列表
+const sExp  = document.getElementById("exp-select");
+const sStart = document.getElementById("exp-start");
+const sEnd   = document.getElementById("exp-end");
+
+// 生成等级列表（1、10、20、…、100）
+function fillLevelSelect(sel) {
+  let first = document.createElement("option");
+  first.value = 1;
+  first.textContent = "1级";
+  sel.appendChild(first);
+
+  for (let i = 10; i <= 100; i += 10) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `${i}级`;
+    sel.appendChild(opt);
+  }
+}
+
+fillLevelSelect(sStart);
+// 起始等级：包含1级
+fillLevelSelect(sStart);
+sStart.value = 1;
+
+// 目标等级：不包含1级
+for (let i = 10; i <= 100; i += 10) {
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = i + "级";
+  sEnd.appendChild(opt);
+}
+sEnd.value = 10;
+
+
+// 保存添加的记录
+let expRecords = [];
+
+// 渲染已添加的记录
+function renderExpList() {
+  const box = document.getElementById("exp-list");
+
+  if (expRecords.length === 0) {
+    box.innerHTML = `<div class="muted">暂无记录</div>`;
+    return;
+  }
+
+  let sumM1 = 0;
+  let sumM2 = 0;
+
+  let html = expRecords
+    .map((rec, idx) => {
+      sumM1 += rec.m1;
+      sumM2 += rec.m2;
+
+      return `
+        <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b>${rec.name}：${rec.start}级 → ${rec.end}级</b>
+
+            <button class="del-btn"
+              data-index="${idx}"
+              style="
+                background:#ef4444;
+                border:none;
+                padding:4px 10px;
+                border-radius:6px;
+                color:white;
+                cursor:pointer;
+                font-size:12px;">
+              删除
+            </button>
+          </div>
+
+          <div style="display:flex; gap:16px; margin-top:6px;">
+            <div style="display:flex; gap:4px; align-items:center;">
+              <img src="img/10xp.png" style="width:22px;">
+              <b>${rec.m1}</b>
+            </div>
+
+            <div style="display:flex; gap:4px; align-items:center;">
+              <img src="img/stone1.png" style="width:22px;">
+              <b>${rec.m2}</b>
+            </div>
+          </div>
+
+        </div>
+      `;
+    })
+    .join("");
+
+  // 总计区域
+  html += `
+    <div style="border-top:1px solid var(--border); padding-top:10px;">
+      <b>总计：</b>
+
+      <div style="display:flex; gap:16px; margin-top:6px;">
+        <div style="display:flex; gap:4px; align-items:center;">
+          <img src="img/10xp.png" style="width:22px;">
+          <b>${sumM1}</b>
+        </div>
+
+        <div style="display:flex; gap:4px; align-items:center;">
+          <img src="img/stone1.png" style="width:22px;">
+          <b>${sumM2}</b>
+        </div>
+      </div>
+    </div>
+  `;
+
+  box.innerHTML = html;
+
+  // 删除按钮绑定
+  document.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = () => {
+      const i = parseInt(btn.dataset.index);
+      expRecords.splice(i, 1);
+      renderExpList();
+    };
+  });
+}
+
+// 点击添加
+document.getElementById("exp-add").onclick = () => {
+  const expKey = sExp.value;
+  const start = parseInt(sStart.value);
+  const end = parseInt(sEnd.value);
+  const expName = sExp.options[sExp.selectedIndex].textContent;
+
+  if (end <= start) {
+    alert("目标等级必须大于起始等级！");
+    return;
+  }
+
+  let totalM1 = 0;
+  let totalM2 = 0;
+
+  for (let rg of levelRanges) {
+    const [a, b] = rg.split("-").map(Number);
+    if (a >= start && b <= end) {
+      totalM1 += expertCost[expKey][rg].m1;
+      totalM2 += expertCost[expKey][rg].m2;
+    }
+  }
+
+  expRecords.push({
+    name: expName,
+    start,
+    end,
+    m1: totalM1,
+    m2: totalM2
+  });
+
+  renderExpList();
+};
+
+// 清空
+document.getElementById("exp-clear").onclick = () => {
+  expRecords = [];
+  renderExpList();
+};
+
+
+
+const skillInfo = {
+    expert1: {
+    1: {
+      name: "Entrapment Lv. 10",
+      desc: `Cyrille's incredible group hunting skills allow her to call many more to the hunters’ fest, increasing Bear Hunt Rally Capacity by <span style="color:#22d3ee;">300,000</span>.`,
+      table: [
+        ["1", "-", "-"],
+        ["2", "3,600", "70"],
+        ["3", "7,200", "140"],
+        ["4", "10,800", "210"],
+        ["5", "14,400", "280"],
+        ["6", "18,000", "350"],
+        ["7", "21,600", "420"],
+        ["8", "25,200", "490"],
+        ["9", "28,800", "560"],
+        ["10", "32,400", "630"]
+      ]
+    },
+    2: {
+        icon: "img/skill_cyrille_2.png",
+        name: "Scavenging Lv.5",
+        desc: `No hunting weapon is lost in Cyrille’s capable hands. Her recycling efforts grant <span style="color:#22d3ee;">5 ×100</span> Enhancement XP Component rewards every Bear Hunt.`,
+        table: [
+            ["1","-","-"],
+            ["2","27,600","400"],
+            ["3","55,200","800"],
+            ["4","110,400","1600"],
+            ["5","220,800","3200"]
+        ]
+    },
+    3: {
+  icon: "img/skill_cyrille_3.png",
+  name: "Weapon Master Lv.5",
+  desc: `Cyrille’s knowledge extends to hero gear expertise, increasing Essence Stone rewards obtained in Bear Hunt by <span style="color:#22d3ee;">5</span>.`,
+  table: [
+    ["1","-","-"],
+    ["2","43,200","500"],
+    ["3","86,400","1000"],
+    ["4","172,800","2000"],
+    ["5","345,600","4000"]
+  ]
+},
+4: {
+  icon: "img/skill_cyrille_4.png",
+  name: "Ursa’s Bane Lv.10",
+  desc: `Cyrille’s command skills transfer well into the hunting realm, increasing Bear Hunt Troops Deployment capacity by <span style="color:#22d3ee;">30,000</span>.`,
+  table: [
+    ["1","-","-"],
+    ["2","10,200","100"],
+    ["3","20,400","200"],
+    ["4","30,600","300"],
+    ["5","41,400","400"],
+    ["6","51,600","500"],
+    ["7","61,800","600"],
+    ["8","72,600","700"],
+    ["9","82,800","800"],
+    ["10","93,000","900"]
+  ]
+}
+
+  },
+ // ========== expert2：Agnes ==========
+ expert2: {
+  // Skill 1 — Efficient Recon Lv.5
+  1: {
+    icon: "img/skill_agnes_1.png",
+    name: "Efficient Recon Lv.5",
+    desc: `Not all spymaster plans are created equal, and Agnes is a master of enhanced Lighthouse scouting, giving <span style="color:#22d3ee;">8</span> extra Intel missions per day.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "43,200", "500"],
+      ["3", "86,400", "1,000"],
+      ["4", "172,800", "2,000"],
+      ["5", "345,600", "4,000"]
+    ]
+  },
+
+  // Skill 2 — Optimization Lv.5
+  2: {
+    icon: "img/skill_agnes_2.png",
+    name: "Optimization Lv.5",
+    desc: `Improved can production efficiency boosts Storehouse Chief Stamina gain by <span style="color:#22d3ee;">40</span>.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "34,200", "400"],
+      ["3", "69,000", "800"],
+      ["4", "138,000", "1,600"],
+      ["5", "276,000", "3,200"]
+    ]
+  },
+
+  // Skill 3 — Project Management Lv.5
+  3: {
+    icon: "img/skill_agnes_3.png",
+    name: "Project Management Lv.5",
+    desc: `Good project management is a precursor to efficient construction. Agnes speeds up construction by <span style="color:#22d3ee;">8 hours</span> on every new build.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "13,800", "200"],
+      ["3", "27,600", "400"],
+      ["4", "55,200", "800"],
+      ["5", "110,400", "1,600"]
+    ]
+  },
+
+  // Skill 4 — Covert Knowledge Lv.10
+  4: {
+    icon: "img/skill_agnes_4.png",
+    name: "Covert Knowledge Lv.10",
+    desc: `The wisdom of the ancients has not been forgotten by Agnes, giving <span style="color:#22d3ee;">120</span> additional Mystery Badge(s) upon daily mission completion and <span style="color:#22d3ee;">4</span> more free refreshes at the Mystery Shop.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "10,200", "100"],
+      ["3", "20,400", "200"],
+      ["4", "30,600", "300"],
+      ["5", "41,400", "400"],
+      ["6", "51,600", "500"],
+      ["7", "61,800", "600"],
+      ["8", "72,600", "700"],
+      ["9", "82,800", "800"],
+      ["10","93,000", "900"]
+    ]
+  }
+},
+
+expert3: {
+  // ========== Skill 1 ==========
+  1: {
+    icon: "img/skill_holger_1.png",
+    name: "Arena Elite Lv.10",
+    desc: `Tough training gets tough trainee results. Holger's rigorous program increases Arena heroes' Attack and Health by <span style='color:#22d3ee;'>20%</span>.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "82,800", "600"],
+      ["3", "165,600", "1,200"],
+      ["4", "248,400", "1,800"],
+      ["5", "331,800", "2,400"],
+      ["6", "414,600", "3,000"],
+      ["7", "497,400", "3,600"],
+      ["8", "580,200", "4,200"],
+      ["9", "663,600", "4,800"],
+      ["10", "746,400", "5,400"]
+    ]
+  },
+
+  // ========== Skill 2 ==========
+  2: {
+    icon: "img/skill_holger_2.png",
+    name: "Crowd Pleaser Lv.10",
+    desc: `Holger knows how to put on a show and so will his heroes. Holger's classic crowd-pleasers increase both daily and weekly Arena Tokens earned by <span style='color:#22d3ee;'>50%</span>.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "30,600", "300"],
+      ["3", "61,800", "600"],
+      ["4", "93,000", "900"],
+      ["5", "124,200", "1,200"],
+      ["6", "155,400", "1,500"],
+      ["7", "186,600", "1,800"],
+      ["8", "217,200", "2,100"],
+      ["9", "248,400", "2,400"],
+      ["10", "279,600", "2,700"]
+    ]
+  },
+
+  // ========== Skill 3 ==========
+  3: {
+    icon: "img/skill_holger_3.png",
+    name: "Arena Star Lv.10",
+    desc: `Holger is a true Ace of the Arena and that means his Chief's and heroes get the star treatment: <span style='color:#22d3ee;'>3</span> more items in the Arena Shop at an <span style='color:#22d3ee;'>50%</span> discount.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "30,600", "300"],
+      ["3", "61,800", "600"],
+      ["4", "93,000", "900"],
+      ["5", "124,200", "1,200"],
+      ["6", "155,400", "1,500"],
+      ["7", "186,600", "1,800"],
+      ["8", "217,200", "2,100"],
+      ["9", "248,400", "2,400"],
+      ["10", "279,600", "2,700"]
+    ]
+  },
+
+  // ========== Skill 4 ==========
+  4: {
+    icon: "img/skill_holger_4.png",
+    name: "Legacy Lv.10",
+    desc: `Holger is in the Arena legend-creation process, giving heroes <span style='color:#22d3ee;'>20%</span> additional Attack and Health in the Arena.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "82,800", "600"],
+      ["3", "165,600", "1,200"],
+      ["4", "248,400", "1,800"],
+      ["5", "331,800", "2,400"],
+      ["6", "414,600", "3,000"],
+      ["7", "497,400", "3,600"],
+      ["8", "580,200", "4,200"],
+      ["9", "663,600", "4,800"],
+      ["10", "746,400", "5,400"]
+    ]
+  }
+},
+
+  // ========== expert4：Romulus ==========
+  expert4: {
+  1: {
+    icon: "img/skill_romulus_1.png",
+    name: "Call of War Lv.10",
+    desc: `Romulus mobilizes to win, allowing free recruitment of <span style="color:#22d3ee;">600</span> additional high-level troops from any Camp per day as well as an additional <span style="color:#22d3ee;">10</span> Loyalty Tag(s) from the Enlistment Office.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "30,600", "300"],
+      ["3", "61,800", "600"],
+      ["4", "93,000", "900"],
+      ["5", "124,200", "1,200"],
+      ["6", "155,400", "1,500"],
+      ["7", "186,600", "1,800"],
+      ["8", "217,200", "2,100"],
+      ["9", "248,400", "2,400"],
+      ["10", "279,600", "2,700"]
+    ]
+  },
+
+  2: {
+    icon: "img/skill_romulus_2.png",
+    name: "Last Line Lv.20",
+    desc: `Solaris’ tactics didn’t save the empire, but Romulus can rework them to protect you. Troops’ Attack and Defense <span style="color:#22d3ee;">+10%</span>.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "86,400", "500"],
+      ["3", "172,800", "1,000"],
+      ["4", "259,200", "1,500"],
+      ["5", "345,600", "2,000"],
+      ["6", "432,000", "2,500"],
+      ["7", "518,400", "3,000"],
+      ["8", "604,800", "3,500"],
+      ["9", "691,200", "4,000"],
+      ["10", "777,600", "4,500"],
+      ["11", "864,000", "5,000"],
+      ["12", "950,400", "5,500"],
+      ["13", "1,036,800", "6,000"],
+      ["14", "1,209,600", "7,000"],
+      ["15", "1,382,400", "8,000"],
+      ["16", "1,382,400", "8,000"],
+      ["17", "1,555,200", "9,000"],
+      ["18", "1,555,200", "9,000"],
+      ["19", "1,728,000", "10,000"],
+      ["20", "1,728,000", "10,000"]
+    ]
+  },
+
+  3: {
+    icon: "img/skill_romulus_3.png",
+    name: "Spirit of Aeetis Lv.20",
+    desc: `The Aeetes may be gone, but their spirit lives on in Romulus and his men. Troops’ Lethality and Health <span style="color:#22d3ee;">+10%</span>.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "159,000", "800"],
+      ["3", "297,600", "1,500"],
+      ["4", "436,800", "2,200"],
+      ["5", "595,800", "3,000"],
+      ["6", "754,800", "3,800"],
+      ["7", "894,000", "4,500"],
+      ["8", "1,033,200", "5,200"],
+      ["9", "1,192,200", "6,000"],
+      ["10", "1,351,200", "6,800"],
+      ["11", "1,490,400", "7,500"],
+      ["12", "1,629,000", "8,200"],
+      ["13", "1,788,000", "9,000"],
+      ["14", "2,086,200", "10,500"],
+      ["15", "2,334,400", "12,000"],
+      ["16", "2,334,400", "12,000"],
+      ["17", "2,682,600", "13,500"],
+      ["18", "2,682,600", "13,500"],
+      ["19", "2,820,800", "15,000"],
+      ["20", "2,980,000", "15,000"]
+    ]
+  },
+
+  4: {
+    icon: "img/skill_romulus_4.png",
+    name: "One Heart Lv.20",
+    desc: `Romulus has commanded armies far greater than those of today, enhancing your Rally Capacity by <span style="color:#22d3ee;">100,000</span>.`,
+    table: [
+      ["1", "-", "-"],
+      ["2", "179,400", "800"],
+      ["3", "336,600", "1,500"],
+      ["4", "493,800", "2,200"],
+      ["5", "673,800", "3,000"],
+      ["6", "853,200", "3,800"],
+      ["7", "1,010,400", "4,500"],
+      ["8", "1,167,600", "5,200"],
+      ["9", "1,347,600", "6,000"],
+      ["10", "1,527,600", "6,800"],
+      ["11", "1,684,800", "7,500"],
+      ["12", "1,842,000", "8,200"],
+      ["13", "2,021,400", "9,000"],
+      ["14", "2,358,600", "10,500"],
+      ["15", "2,695,200", "12,000"],
+      ["16", "2,695,200", "12,000"],
+      ["17", "3,032,400", "13,500"],
+      ["18", "3,032,400", "13,500"],
+      ["19", "3,369,600", "15,000"],
+      ["20", "3,369,600", "15,000"]
+    ]
+  }
+},
+  expert5: {
+    1: {
+      icon: "img/skill_romulus_1.png",
+      name: "Call of War Lv. 10",
+      desc: `Romulus mobilizes to win, allowing free recruitment of <span style="color:#22d3ee;">600</span> additional high-level troops from any Camp per day as well as an additional <span style="color:#22d3ee;">10</span> Loyalty Tag(s).`,
+      table: [
+        ["1", "-", "-"],
+        ["2", "30,600", "300"],
+        ["3", "61,800", "600"],
+        ["4", "93,000", "900"],
+        ["5", "124,200", "1,200"],
+        ["6", "155,400", "1,500"],
+        ["7", "186,600", "1,800"],
+        ["8", "217,200", "2,100"],
+        ["9", "248,400", "2,400"],
+        ["10", "279,600", "2,700"]
+      ]
+    }
+  },
+  expert6: {
+    1: {
+      icon: "img/skill_romulus_1.png",
+      name: "Call of War Lv. 10",
+      desc: `Romulus mobilizes to win, allowing free recruitment of <span style="color:#22d3ee;">600</span> additional high-level troops from any Camp per day as well as an additional <span style="color:#22d3ee;">10</span> Loyalty Tag(s).`,
+      table: [
+        ["1", "-", "-"],
+        ["2", "30,600", "300"],
+        ["3", "61,800", "600"],
+        ["4", "93,000", "900"],
+        ["5", "124,200", "1,200"],
+        ["6", "155,400", "1,500"],
+        ["7", "186,600", "1,800"],
+        ["8", "217,200", "2,100"],
+        ["9", "248,400", "2,400"],
+        ["10", "279,600", "2,700"]
+      ]
+    }
+  }
+};
+
+
+// 打开弹窗
+document.querySelectorAll(".exp-icon").forEach(icon=>{
+  icon.classList.add("skill-btn");
+
+  icon.onclick = ()=>{
+    const expertKey = icon.dataset.skill;
+    openPopup(expertKey, 1); // 默认打开 Skill1
+  };
+});
+
+// 打开指定技能
+function openPopup(expert, skill){
+  currentExpert = expert;
+  currentSkill = skill;
+
+  document.querySelectorAll(".skill-tabs .tab").forEach(btn=>{
+    btn.classList.remove("active");
+    if(btn.dataset.tab == skill) btn.classList.add("active");
+  });
+
+  loadSkill(expert, skill);     // 左侧技能内容
+  loadCalculator(expert);       // 右侧计算器
+
+  document.getElementById("skill-popup").style.display="flex";
+}
+
+
+// 切换 Skill Tab
+document.querySelectorAll(".skill-tabs .tab").forEach(btn=>{
+    btn.onclick=()=>{
+  const skill = parseInt(btn.dataset.tab);
+
+  currentSkill = skill;      // ⭐ 必须同步技能编号
+
+  document.querySelectorAll(".skill-tabs .tab")
+    .forEach(t=>t.classList.remove("active"));
+
+  btn.classList.add("active");
+
+  loadSkill(currentExpert, skill);
+  loadCalculator(currentExpert);  // ⭐ 右侧同步更新等级
+};
+});
+
+// 填充弹窗内容
+function loadSkill(expert, skill){
+  const data = skillInfo[expert][skill];
+
+  let html = `
+    <div style="display:flex; gap:12px; margin-bottom:12px;">
+      <div>
+        <h2>${data.name}</h2>
+        <div>${data.desc}</div>
+      </div>
+    </div>
+
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+  <tr>
+    <th>Level</th>
+    <th>EXP</th>
+    <th>
+      <img src="img/exbook.png" style="width:24px;vertical-align:middle;">
+      Book
+    </th>
+  </tr>
+</thead>
+      <tbody>
+  `;
+
+  data.table.forEach(row=>{
+    html += `
+      <tr>
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table>";
+
+  document.getElementById("popup-content").innerHTML = html;
+}
+
+// 关闭弹窗
+document.querySelector(".close-btn").onclick = ()=>{
+  document.getElementById("skill-popup").style.display="none";
+};
+
+//加载计算器选项
+function loadCalculator(expertKey){
+  const skillSelect = document.getElementById("calc-skill-select");
+  skillSelect.innerHTML = "";
+
+  // 添加技能选项
+  for(let i=1;i<=4;i++){
+    if(skillInfo[expertKey][i]){
+      let op = document.createElement("option");
+      op.value = i;
+      op.textContent = "Skill " + i;
+      skillSelect.appendChild(op);
+    }
+  }
+
+  // ⭐ 正确的等级填充函数
+  function fillLevelDropdowns(skillIndex){
+    const data = skillInfo[expertKey][skillIndex];
+    const maxLv = data.table.length;
+
+    const s = document.getElementById("calc-start");
+    const e = document.getElementById("calc-end");
+
+    s.innerHTML = "";
+    e.innerHTML = "";
+
+    for(let lv=1; lv<=maxLv; lv++){
+      let opt = document.createElement("option");
+      opt.value = lv;
+      opt.textContent = lv + "级";
+      s.appendChild(opt.cloneNode(true));
+      e.appendChild(opt);
+    }
+
+    s.value = 1;
+    e.value = maxLv;
+  }
+
+  // ⭐ 初始化必须根据 currentSkill，而不是 skillSelect.value
+  let initSkill = currentSkill && skillInfo[expertKey][currentSkill]
+        ? currentSkill
+        : 1;
+
+  skillSelect.value = String(initSkill);
+  fillLevelDropdowns(initSkill);
+
+  // ⭐ 切换技能时更新 currentSkill
+  skillSelect.onchange = ()=>{
+    currentSkill = parseInt(skillSelect.value);
+    fillLevelDropdowns(currentSkill);
+  };
+}
+
+
+let skillRecords = [];
+
+// 渲染技能列表
+function renderSkillList() {
+    const box = document.getElementById("skill-list");
+
+    if (skillRecords.length === 0) {
+        box.innerHTML = `<div class="muted">暂无记录</div>`;
+        return;
+    }
+
+    let sumExp = 0;
+    let sumBook = 0;
+
+    let html = skillRecords.map((rec, idx) => {
+        sumExp += rec.exp;
+        sumBook += rec.book;
+
+        return `
+        <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b>${rec.skillName}：${rec.start}级 → ${rec.end}级</b>
+
+                <button class="del-btn" data-index="${idx}">删除</button>
+            </div>
+
+            <div style="display:flex; gap:16px; margin-top:6px;">
+                <div style="display:flex; gap:4px; align-items:center;">
+                    EXP
+                    <b>${rec.exp.toLocaleString()}</b>
+                </div>
+
+                <div style="display:flex; gap:4px; align-items:center;">
+                    <img src="img/exbook.png" style="width:20px;">
+                    <b>${rec.book.toLocaleString()}</b>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join("");
+
+    html += `
+    <div style="border-top:1px solid var(--border); padding-top:10px;">
+        <b>总计：</b>
+        <div style="display:flex; gap:16px; margin-top:6px;">
+            <div style="display:flex; gap:4px; align-items:center;">
+                EXP
+                <b>${sumExp.toLocaleString()}</b>
+            </div>
+
+            <div style="display:flex; gap:4px; align-items:center;">
+                <img src="img/exbook.png" style="width:20px;">
+                <b>${sumBook.toLocaleString()}</b>
+            </div>
+        </div>
+    </div>
+    `;
+
+    box.innerHTML = html;
+
+    // 删除按钮
+    document.querySelectorAll(".del-btn").forEach(btn => {
+        btn.onclick = () => {
+            const i = btn.dataset.index;
+            skillRecords.splice(i, 1);
+            renderSkillList();
+        };
+    });
+}
+
+
+// 点击添加
+document.getElementById("skill-add").onclick = () => {
+    const skillIndex = parseInt(document.getElementById("calc-skill-select").value);
+    const start = parseInt(document.getElementById("calc-start").value);
+    const end = parseInt(document.getElementById("calc-end").value);
+
+    if (end <= start) {
+        alert("目标等级必须大于起始等级！");
+        return;
+    }
+
+    const data = skillInfo[currentExpert][skillIndex];
+    const rows = data.table;
+
+    let totalExp = 0;
+    let totalBook = 0;
+
+    for (let i = start + 1; i <= end; i++) {
+        const row = rows[i - 1];
+        totalExp += parseInt(row[1].replace(/,/g, "")) || 0;
+        totalBook += parseInt(row[2].replace(/,/g, "")) || 0;
+    }
+
+    skillRecords.push({
+        skillName: "Skill " + skillIndex,
+        start,
+        end,
+        exp: totalExp,
+        book: totalBook
+    });
+
+    renderSkillList();
+};
+
+
+// 清空
+document.getElementById("skill-clear").onclick = () => {
+    skillRecords = [];
+    renderSkillList();
+};
+
+
+// 点击背景关闭
+document.getElementById("skill-popup").addEventListener("click", function(e){
+    // 如果点击的是背景（而不是弹窗本体），就关闭
+    if(e.target === this){
+        this.style.display = "none";
+    }
+});
+
+
+</script>
+</body>
+</html>

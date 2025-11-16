@@ -186,6 +186,7 @@
       <a id="nav-gear" href="lord-gear.html">领主装备</a>
       <a id="nav-fire" href="fc.html">火晶升级</a>
       <a id="nav-pet" href="pet.html">宠物升级</a>
+      <a href="expert.html">专家升级</a>
       
     </nav>
   </header>
@@ -327,7 +328,7 @@ rows.forEach(r => {
   o2.textContent = r.id;
   accEndSel.appendChild(o2);
 });
-// 填充升级数量下拉框（1 ~ 16）
+// 填充升级数量下拉框（1 ~ 18）
 const countSel = document.getElementById("acc-count");
 for(let i = 1; i <= 18; i++){
   const opt = document.createElement("option");
