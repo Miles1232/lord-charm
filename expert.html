@@ -1085,6 +1085,9 @@ function openPopup(expert, skill){
   currentExpert = expert;
   currentSkill = skill;
 
+  skillRecords = [];
+  renderSkillList();
+
   document.querySelectorAll(".skill-tabs .tab").forEach(btn=>{
     btn.classList.remove("active");
     if(btn.dataset.tab == skill) btn.classList.add("active");
@@ -1261,8 +1264,8 @@ function renderSkillList() {
         <b>总计：</b>
         <div style="display:flex; gap:16px; margin-top:6px;">
             <div style="display:flex; gap:4px; align-items:center;">
-                EXP
-                <b>${sumExp.toLocaleString()}</b>
+                Speedup
+                <b>${Math.round(sumExp/82000 * 23 / 24)}</b> days
             </div>
 
             <div style="display:flex; gap:4px; align-items:center;">
