@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>战争学院升级 | 升级计算页面</title>
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #111827;
+            --muted: #9ca3af;
+            --fg: #e5e7eb;
+            --accent: #f59e0b;
+            /* 橙色主题 */
+            --accent-2: #22d3ee;
+            --border: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui;
+            color: var(--fg);
+            background: linear-gradient(180deg, #0b1023 0%, #0f172a 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin: 16px 0;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding-bottom: 16px;
+        }
+
+        nav a {
+            color: #7dd3fc;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        @media(max-width:960px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .aside {
+                position: static;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #0b1224;
+            padding: 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .panel {
+            padding: 16px;
+        }
+
+        .panel h2 {
+            margin: 0 0 12px;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        .calc-row {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .calc-row label {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        select,
+        input[type="number"] {
+            padding: 8px 12px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #0b1023;
+            color: var(--fg);
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(90deg, var(--accent), #ef4444 40%, var(--accent-2));
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .result {
+            background: #0b1023;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* 图标与文字对齐辅助类 */
+        .icon-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .icon-small {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .res-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .res-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .cat-title {
+            grid-column: 1 / -1;
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: bold;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>战争学院升级</h1>
+        <nav>
+            <a href="index.html">领主宝石</a>
+            <a href="lord-gear.html">领主装备</a>
+            <a href="fc.html">火晶升级</a>
+            <a href="pet.html">宠物升级</a>
+            <a href="expert.html">专家升级</a>
+            <a href="war-academy.html" style="color:var(--accent);">当前页：战争学院</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- 左侧表格区域 -->
+        <section class="card table-wrap" style="height: 80vh; overflow-y: auto;">
+            <div
+                style="padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin:0; display:inline-block;">数据预览</h3>
+                    <span style="font-size:13px; color:var(--muted); margin-left:8px;">(以盾为例，其他兵种消耗相同)</span>
+                </div>
+                <select id="view-select" style="width: 200px;">
+                    <!-- JS 填充 -->
+                </select>
+            </div>
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:80px;">等级</th>
+                        <th>火晶微粒</th>
+                        <th>钢材</th>
+                        <th>生肉/木材</th>
+                        <th>煤矿</th>
+                        <th>铁矿</th>
+                    </tr>
+                </thead>
+
+                <tbody id="table-body">
+                    <!-- JS 自动填充 -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 右侧全局计算器 -->
+        <aside class="aside card">
+            <div class="panel">
+                <h2>全科技进度计算器</h2>
+                <p class="muted" style="margin-bottom: 16px;">设置你当前的科技等级，计算解锁 T11 兵种所需的剩余材料。</p>
+
+                <div id="calc-inputs" style="max-height: 50vh; overflow-y: auto; padding-right: 8px;">
+                    <!-- JS 动态生成所有输入项 -->
+                </div>
+
+                <button id="calc-btn" class="btn">计算剩余消耗</button>
+
+                <div id="result-box" class="result" style="display:none;">
+                    <div style="text-align:center; font-weight:bold; margin-bottom:10px; color:#fff;">剩余所需总计</div>
+
+                    <div class="res-grid">
+                        <div class="res-item">
+                            <img src="img/fcs.png" class="icon-small">
+                            <span id="res-fc" style="color:#fb923c; font-weight:bold;">0</span>
+                        </div>
+                        <div class="res-item">
+                            <img src="img/steel.png" class="icon-small" onerror="this.style.display='none'">
+                            <span>钢材: <b id="res-steel">0</b></span>
+                        </div>
+                        <div class="res-item">
+                            <img src="img/meat.png" class="icon-small" onerror="this.style.display='none'">
+                            <span>生肉: <b id="res-meat">0</b></span>
+                        </div>
+                        <div class="res-item">
+                            <img src="img/wood.png" class="icon-small" onerror="this.style.display='none'">
+                            <span>木材: <b id="res-wood">0</b></span>
+                        </div>
+                        <div class="res-item">
+                            <img src="img/coal.png" class="icon-small" onerror="this.style.display='none'">
+                            <span>煤矿: <b id="res-coal">0</b></span>
+                        </div>
+                        <div class="res-item">
+                            <img src="img/iron.png" class="icon-small" onerror="this.style.display='none'">
+                            <span>铁矿: <b id="res-iron">0</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        // ========== 数据定义 ==========
+        // 辅助函数：创建消耗对象
+        function cost(fc, steel, m, c, i) {
+            return { fc, steel, meat: m, wood: m, coal: c, iron: i };
+        }
+
+        // 1. 烈焰战队 (Flame Squad) - 5级
+        const data_squad = [
+            cost(16, 5000, 300000, 60000, 15000),
+            cost(25, 8000, 450000, 96000, 24000),
+            cost(41, 13000, 780000, 150000, 39000),
+            cost(68, 21000, 1200000, 250000, 64000),
+            cost(108, 33000, 2000000, 400000, 100000)
+        ];
+
+        // 2. 怒焰猛击 (Flame Strike) - 8级
+        const data_atk1 = [
+            cost(40, 10000, 800000, 160000, 40000),
+            cost(56, 14000, 1100000, 220000, 56000),
+            cost(74, 18000, 1400000, 290000, 74000),
+            cost(102, 25000, 2000000, 400000, 100000),
+            cost(136, 34000, 2700000, 540000, 130000),
+            cost(184, 46000, 3600000, 730000, 180000),
+            cost(248, 62000, 4900000, 990000, 240000),
+            cost(334, 83000, 6600000, 1300000, 330000)
+        ];
+
+        // 3. 怒焰坚盾 (Flame Shield) - 8级
+        const data_def1 = data_atk1;
+
+        // 4. 烈焰军团 (Flame Legion) - 12级
+        const data_legion = [
+            cost(83, 23000, 1000000, 210000, 54000),
+            cost(102, 28000, 1300000, 260000, 66000),
+            cost(125, 34000, 1600000, 320000, 81000),
+            cost(150, 41000, 1900000, 390000, 97000),
+            cost(184, 51000, 2300000, 470000, 110000),
+            cost(225, 62000, 2900000, 580000, 140000),
+            cost(276, 76000, 3500000, 710000, 170000),
+            cost(334, 83000, 6600000, 1300000, 330000),
+            cost(418, 110000, 5400000, 1000000, 270000),
+            cost(502, 130000, 6500000, 1300000, 320000),
+            cost(602, 160000, 7800000, 1500000, 390000),
+            cost(744, 200000, 9600000, 1900000, 480000)
+        ];
+
+        // 5. 怒焰战斧 (Flame Tomahawk) - 12级
+        const data_atk2 = [
+            cost(54, 15000, 700000, 140000, 35000),
+            cost(66, 18000, 860000, 170000, 43000),
+            cost(81, 22000, 1000000, 210000, 52000),
+            cost(97, 27000, 1200000, 250000, 63000),
+            cost(118, 33000, 1500000, 300000, 77000),
+            cost(145, 40000, 1800000, 370000, 94000),
+            cost(178, 49000, 2300000, 460000, 110000),
+            cost(216, 60000, 2800000, 560000, 140000),
+            cost(270, 75000, 3500000, 700000, 170000),
+            cost(324, 90000, 4200000, 840000, 210000),
+            cost(338, 100000, 5000000, 1000000, 250000),
+            cost(480, 130000, 6200000, 1200000, 310000)
+        ];
+
+        // 6. 怒焰护佑 (Flame Protection) - 12级
+        const data_def2 = data_atk2;
+
+        // 7. T11 烈日盾兵 (Helios Unlock) - 1级
+        const data_unlock = [
+            cost(2236, 1000000, 85000000, 17000000, 4200000)
+        ];
+
+        // 汇总所有科技项 (合并兵种)
+        // multiplier: 3 表示该项代表 3 个兵种 (步/枪/射)，计算总消耗时要 x3
+        const allTechs = [
+            { id: "squad", name: "烈焰战队 (Flame Squad)", data: data_squad, group: "基础", multiplier: 1 },
+
+            { id: "atk1", name: "怒焰猛击 (Flame Strike)", data: data_atk1, group: "第一阶段", multiplier: 1 },
+            { id: "def1", name: "怒焰坚盾(Flame Shield)", data: data_def1, multiplier: 1 },
+
+            { id: "legion", name: "烈焰军团 (Flame Legion)", data: data_legion, group: "进阶", multiplier: 1 },
+
+            { id: "atk2", name: "怒焰战斧 (Flame Tomahawk)", data: data_atk2, group: "第二阶段", multiplier: 1 },
+            { id: "def2", name: "怒焰护佑 (Flame Protection)", data: data_def2, multiplier: 1 },
+
+            { id: "unlock", name: "T11 烈日盾兵 (Helios Unlock)", data: data_unlock, group: "终极解锁", multiplier: 1 },
+        ];
+
+        // ========== 初始化逻辑 ==========
+        const viewSelect = document.getElementById("view-select");
+        const tableBody = document.getElementById("table-body");
+        const calcInputs = document.getElementById("calc-inputs");
+
+        // 1. 填充左侧下拉框 & 右侧计算器输入
+        let currentGroup = "";
+
+        allTechs.forEach(tech => {
+            // 左侧下拉
+            const opt = document.createElement("option");
+            opt.value = tech.id;
+            opt.textContent = tech.name + (tech.multiplier > 1 ? " (x3)" : "");
+            viewSelect.appendChild(opt);
+
+            // 右侧计算器行
+            if (tech.group && tech.group !== currentGroup) {
+                currentGroup = tech.group;
+                const title = document.createElement("div");
+                title.className = "cat-title";
+                title.textContent = currentGroup;
+                calcInputs.appendChild(title);
+            }
+
+            const row = document.createElement("div");
+            row.className = "calc-row";
+
+            const maxLv = tech.data.length;
+            // 生成等级选项 0 ~ Max
+            let opts = "";
+            for (let i = 0; i <= maxLv; i++) {
+                const label = i === maxLv ? `${i} (已满)` : i;
+                opts += `<option value="${i}">${label}</option>`;
+            }
+
+            row.innerHTML = `
+                <label>${tech.name}</label>
+                <select id="calc-${tech.id}" data-tech-id="${tech.id}">
+                    ${opts}
+                </select>
+            `;
+            calcInputs.appendChild(row);
+        });
+
+        // 2. 渲染左侧表格
+        function renderTable(techId) {
+            const tech = allTechs.find(t => t.id === techId);
+            if (!tech) return;
+
+            tableBody.innerHTML = "";
+            tech.data.forEach((cost, idx) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>Lv.${idx + 1}</td>
+                    <td style="color:#fb923c; font-weight:bold;">${cost.fc}</td>
+                    <td>${formatNum(cost.steel)}</td>
+                    <td>${formatNum(cost.meat)}</td>
+                    <td>${formatNum(cost.coal)}</td>
+                    <td>${formatNum(cost.iron)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function formatNum(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(0) + 'k';
+            return n;
+        }
+
+        viewSelect.onchange = (e) => renderTable(e.target.value);
+        // 默认显示第一个
+        renderTable(allTechs[0].id);
+
+
+        // 3. 计算逻辑
+        document.getElementById("calc-btn").onclick = () => {
+            let total = { fc: 0, steel: 0, meat: 0, wood: 0, coal: 0, iron: 0 };
+
+            allTechs.forEach(tech => {
+                const el = document.getElementById(`calc-${tech.id}`);
+                const currentLv = parseInt(el.value);
+                const maxLv = tech.data.length;
+                const mult = tech.multiplier; // 乘数 (1 或 3)
+
+                // 累加从 currentLv 到 maxLv 的所有消耗
+                for (let i = currentLv; i < maxLv; i++) {
+                    const c = tech.data[i];
+                    total.fc += c.fc * mult;
+                    total.steel += c.steel * mult;
+                    total.meat += c.meat * mult;
+                    total.wood += c.wood * mult;
+                    total.coal += c.coal * mult;
+                    total.iron += c.iron * mult;
+                }
+            });
+
+            // 显示结果
+            document.getElementById("result-box").style.display = "block";
+            document.getElementById("res-fc").textContent = total.fc.toLocaleString();
+            document.getElementById("res-steel").textContent = formatNum(total.steel);
+            document.getElementById("res-meat").textContent = formatNum(total.meat);
+            document.getElementById("res-wood").textContent = formatNum(total.wood);
+            document.getElementById("res-coal").textContent = formatNum(total.coal);
+            document.getElementById("res-iron").textContent = formatNum(total.iron);
+        };
+
+    </script>
+</body>
+
+</html>
